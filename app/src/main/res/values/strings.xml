@@ -4,4 +4,7 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_confirm">Confirm</string>
     <string name="dialog_message_overlay">Please enable Screen Overlay for Macroid to provide service.</string>
+
+    <string name="button_overlay_start">Build an Overlay Network!</string>
+    <string name="button_overlay_stop">Stop Service</string>
 </resources>

@@ -4,6 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".ui.activity.MainActivity">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:src="@drawable/image_overlay"
+        tools:ignore="ContentDescription" />
+
+    <Button
+        android:id="@+id/button_overlay"
+        style="@style/AppTheme.ButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_overlay_start" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>
