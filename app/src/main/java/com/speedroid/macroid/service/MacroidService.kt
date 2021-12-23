@@ -63,7 +63,7 @@ class MacroidService : Service() {
             return
 
         // initialize button view
-        buttonView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.layout_overlay_button, null)
+        buttonView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.layout_overlay, null)
 
         // initialize layout params
         layoutParams = WindowManager.LayoutParams(

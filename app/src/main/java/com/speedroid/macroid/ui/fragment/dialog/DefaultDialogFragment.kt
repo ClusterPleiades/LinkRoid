@@ -14,7 +14,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
-import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_ENABLE_OVERLAY
+import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_OVERLAY
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
 
@@ -34,13 +34,13 @@ class DefaultDialogFragment(private val type: Int) : androidx.fragment.app.Dialo
             // initialize and set message
             val messageTextView = dialogView.findViewById<TextView>(R.id.message_dialog_default)
             when (type) {
-                DIALOG_TYPE_ENABLE_OVERLAY -> messageTextView.setText(R.string.dialog_message_overlay)
+                DIALOG_TYPE_OVERLAY -> messageTextView.setText(R.string.dialog_message_overlay)
             }
 
             // set positive listener
             dialogView.findViewById<View>(R.id.positive_dialog_default).setOnClickListener {
                 when (type) {
-                    DIALOG_TYPE_ENABLE_OVERLAY -> {
+                    DIALOG_TYPE_OVERLAY -> {
                         val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + context!!.packageName))
                         startActivity(intent)
                     }
@@ -56,7 +56,7 @@ class DefaultDialogFragment(private val type: Int) : androidx.fragment.app.Dialo
             // set negative visibility
             val negativeTextView = dialogView.findViewById<TextView>(R.id.negative_dialog_default)
             when (type) {
-                DIALOG_TYPE_ENABLE_OVERLAY -> negativeTextView.visibility = View.INVISIBLE
+                DIALOG_TYPE_OVERLAY -> negativeTextView.visibility = View.INVISIBLE
                 else -> negativeTextView.visibility = View.VISIBLE
             }
 
@@ -72,7 +72,7 @@ class DefaultDialogFragment(private val type: Int) : androidx.fragment.app.Dialo
 
         // set canceled on touch outside
         when (type) {
-            DIALOG_TYPE_ENABLE_OVERLAY -> {
+            DIALOG_TYPE_OVERLAY -> {
                 dialog.setCanceledOnTouchOutside(false)
             }
             else -> {
@@ -91,7 +91,7 @@ class DefaultDialogFragment(private val type: Int) : androidx.fragment.app.Dialo
 
         // set cancelable
         when (type) {
-            DIALOG_TYPE_ENABLE_OVERLAY -> {
+            DIALOG_TYPE_OVERLAY -> {
                 dialog!!.setCancelable(false)
             }
             else -> {

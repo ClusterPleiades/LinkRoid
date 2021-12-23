@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingStart="@dimen/margin_default"
+    android:paddingTop="@dimen/margin_small"
+    android:paddingEnd="@dimen/margin_default"
+    android:paddingBottom="@dimen/margin_small">
+
+    <TextView
+        android:id="@+id/message_dialog_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/color_dark_gray" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

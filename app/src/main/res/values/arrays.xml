@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_mode">
+        <item>Gate</item>
+    </string-array>
+</resources>
