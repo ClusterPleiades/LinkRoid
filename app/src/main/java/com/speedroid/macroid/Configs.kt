@@ -3,7 +3,8 @@ package com.speedroid.macroid
 class Configs {
     companion object {
         // dialog
-        const val DIALOG_TYPE_OVERLAY = 0
+        const val DIALOG_TYPE_ENABLE_OVERLAY = 0
+        const val DIALOG_TYPE_SELECT_MODE = 1
 
         // notification
         const val NOTIFICATION_ID_FOREGROUND = 1004

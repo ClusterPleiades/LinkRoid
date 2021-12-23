@@ -3,6 +3,7 @@ package com.speedroid.macroid.service
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.graphics.PixelFormat
 import android.os.IBinder
 import android.os.SystemClock
@@ -12,16 +13,18 @@ import com.speedroid.macroid.Configs.Companion.NOTIFICATION_ID_FOREGROUND
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.NotificationController
 import com.speedroid.macroid.R
+import com.speedroid.macroid.ui.activity.ModeActivity
 
 class MacroidService : Service() {
     companion object {
         var isOverlaid: Boolean = false
     }
 
-    private lateinit var windowManager: WindowManager
-    private lateinit var layoutParams: WindowManager.LayoutParams
-    private lateinit var buttonView: View
     private lateinit var deviceController: DeviceController
+
+    private lateinit var buttonView: View
+    private lateinit var layoutParams: WindowManager.LayoutParams
+    private lateinit var windowManager: WindowManager
 
     var touchDownTime: Long = 0
 
@@ -59,6 +62,9 @@ class MacroidService : Service() {
         if (isOverlaid)
             return
 
+        // initialize button view
+        buttonView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.layout_overlay_button, null)
+
         // initialize layout params
         layoutParams = WindowManager.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -71,15 +77,17 @@ class MacroidService : Service() {
         )
         layoutParams.gravity = Gravity.END
 
-        // initialize view
-        buttonView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.layout_overlay, null)
+        // initialize window manager
+        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        windowManager.addView(buttonView, layoutParams)
 
-        // set click listener
+        // set button view click listener
         buttonView.setOnClickListener {
-            // TODO add View
+            val intent = Intent(this, ModeActivity::class.java)
+            startActivity(intent.addFlags(FLAG_ACTIVITY_NEW_TASK))
         }
 
-        // set touch listener
+        // set button view touch listener
         buttonView.setOnTouchListener { view: View, motionEvent: MotionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -98,9 +106,5 @@ class MacroidService : Service() {
             }
             true
         }
-
-        // initialize window manager
-        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-        windowManager.addView(buttonView, layoutParams)
     }
 }

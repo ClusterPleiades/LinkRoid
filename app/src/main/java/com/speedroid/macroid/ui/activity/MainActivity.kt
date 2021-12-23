@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_OVERLAY
+import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_ENABLE_OVERLAY
 import com.speedroid.macroid.R
 import com.speedroid.macroid.service.MacroidService
 import com.speedroid.macroid.ui.fragment.dialog.DefaultDialogFragment
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun requestOverlayPermission() {
         // show overlay dialog
-        val defaultDialogFragment = DefaultDialogFragment(DIALOG_TYPE_OVERLAY)
-        defaultDialogFragment.show(supportFragmentManager, DIALOG_TYPE_OVERLAY.toString())
+        val defaultDialogFragment = DefaultDialogFragment(DIALOG_TYPE_ENABLE_OVERLAY)
+        defaultDialogFragment.show(supportFragmentManager, DIALOG_TYPE_ENABLE_OVERLAY.toString())
     }
 }

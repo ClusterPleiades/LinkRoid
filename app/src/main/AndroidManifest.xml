@@ -34,6 +34,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:label=""
+            android:name=".ui.activity.ModeActivity"
+            android:theme="@style/AppTheme.DialogTheme.Transparent" />
 
         <service
             android:name=".service.MacroidService"
