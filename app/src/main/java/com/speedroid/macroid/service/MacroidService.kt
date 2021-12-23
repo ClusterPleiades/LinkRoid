@@ -6,9 +6,7 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.IBinder
 import android.os.SystemClock
-import android.util.Log
 import android.view.*
-import androidx.core.widget.ImageViewCompat
 import com.speedroid.macroid.Configs.Companion.CLICK_TIME_THRESHOLD
 import com.speedroid.macroid.Configs.Companion.NOTIFICATION_ID_FOREGROUND
 import com.speedroid.macroid.DeviceController
@@ -22,8 +20,7 @@ class MacroidService : Service() {
 
     private lateinit var windowManager: WindowManager
     private lateinit var layoutParams: WindowManager.LayoutParams
-    private lateinit var view: View
-    private lateinit var popupView: View
+    private lateinit var buttonView: View
     private lateinit var deviceController: DeviceController
 
     var touchDownTime: Long = 0
@@ -50,7 +47,7 @@ class MacroidService : Service() {
 
     override fun onDestroy() {
         // remove view
-        windowManager.removeView(view)
+        windowManager.removeView(buttonView)
 
         // set isOverlaid false
         isOverlaid = false
@@ -75,16 +72,15 @@ class MacroidService : Service() {
         layoutParams.gravity = Gravity.END
 
         // initialize view
-        view = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.layout_overlay, null)
+        buttonView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.layout_overlay, null)
 
         // set click listener
-        view.setOnClickListener {
-            var chicken: ImageViewCompat? = view.findViewById(R.id.chicken) as ImageViewCompat
-
+        buttonView.setOnClickListener {
+            // TODO add View
         }
 
         // set touch listener
-        view.setOnTouchListener { view: View, motionEvent: MotionEvent ->
+        buttonView.setOnTouchListener { view: View, motionEvent: MotionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
                     touchDownTime = SystemClock.elapsedRealtime()
@@ -105,6 +101,6 @@ class MacroidService : Service() {
 
         // initialize window manager
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-        windowManager.addView(view, layoutParams)
+        windowManager.addView(buttonView, layoutParams)
     }
 }

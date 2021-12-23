@@ -41,6 +41,10 @@ class MainActivity : AppCompatActivity() {
 
         // check overlay permission
         if (!Settings.canDrawOverlays(this)) requestOverlayPermission()
+
+        // set overlay button text
+        if (MacroidService.isOverlaid) overlayButton.setText(R.string.button_overlay_stop)
+        else overlayButton.setText(R.string.button_overlay_start)
     }
 
     private fun requestOverlayPermission() {
