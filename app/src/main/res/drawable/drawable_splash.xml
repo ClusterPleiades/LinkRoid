@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- background -->
+    <item android:drawable="@android:color/white" />
+
+    <!-- logo -->
+    <item
+        android:width="@dimen/icon_size_very_large"
+        android:height="@dimen/icon_size_very_large"
+        android:gravity="center">
+        <bitmap
+            android:src="@drawable/image_gem"/>
+    </item>
+</layer-list>

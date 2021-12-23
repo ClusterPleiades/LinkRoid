@@ -1,0 +1,7 @@
+<resources>
+    <string name="label_app">Macroid</string>
+
+    <string name="dialog_cancel">취소</string>
+    <string name="dialog_confirm">확인</string>
+    <string name="dialog_message_overlay">서비스 제공을 위해 Macroid의 오버레이를 허용해 주세요.</string>
+</resources>
