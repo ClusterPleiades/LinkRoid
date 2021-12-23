@@ -4,11 +4,14 @@ import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
-import android.os.Build
 import android.os.IBinder
+import android.os.SystemClock
+import android.util.Log
 import android.view.*
-import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.widget.ImageViewCompat
+import com.speedroid.macroid.Configs.Companion.CLICK_TIME_THRESHOLD
 import com.speedroid.macroid.Configs.Companion.NOTIFICATION_ID_FOREGROUND
+import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.NotificationController
 import com.speedroid.macroid.R
 
@@ -19,8 +22,11 @@ class MacroidService : Service() {
 
     private lateinit var windowManager: WindowManager
     private lateinit var layoutParams: WindowManager.LayoutParams
-    private lateinit var layout: LinearLayoutCompat
     private lateinit var view: View
+    private lateinit var popupView: View
+    private lateinit var deviceController: DeviceController
+
+    var touchDownTime: Long = 0
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -28,6 +34,9 @@ class MacroidService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+
+        // initialize device controller
+        deviceController = DeviceController(this)
 
         // start foreground with notification
         startForeground(NOTIFICATION_ID_FOREGROUND, NotificationController(this).initializeNotification())
@@ -63,14 +72,35 @@ class MacroidService : Service() {
                     or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
             PixelFormat.TRANSLUCENT
         )
+        layoutParams.gravity = Gravity.END
 
         // initialize view
         view = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.layout_overlay, null)
 
-        // initialize layout
-        layout = view.findViewById(R.id.layout_overlay)
-        layout.setOnClickListener {
-            // TODO
+        // set click listener
+        view.setOnClickListener {
+            var chicken: ImageViewCompat? = view.findViewById(R.id.chicken) as ImageViewCompat
+
+        }
+
+        // set touch listener
+        view.setOnTouchListener { view: View, motionEvent: MotionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    touchDownTime = SystemClock.elapsedRealtime()
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    if (SystemClock.elapsedRealtime() - touchDownTime > CLICK_TIME_THRESHOLD) {
+                        layoutParams.y = motionEvent.rawY.toInt() - (deviceController.getHeightMax() / 2)
+                        windowManager.updateViewLayout(view, layoutParams)
+                    }
+                }
+                MotionEvent.ACTION_UP -> {
+                    if (SystemClock.elapsedRealtime() - touchDownTime < CLICK_TIME_THRESHOLD)
+                        view.performClick()
+                }
+            }
+            true
         }
 
         // initialize window manager

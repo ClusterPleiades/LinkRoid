@@ -4,7 +4,7 @@
 
     <dimen name="icon_size_small">18dp</dimen>
     <dimen name="icon_size_default">36dp</dimen>
-    <dimen name="icon_size_large">40dp</dimen>
+    <dimen name="icon_size_large">52dp</dimen>
     <dimen name="icon_size_very_large">64dp</dimen>
     <dimen name="icon_size_huge">128dp</dimen>
 
