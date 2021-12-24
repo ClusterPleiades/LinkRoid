@@ -59,8 +59,7 @@ class ProjectionService : Service() {
             val bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888)
             bitmap.copyPixelsFromBuffer(buffer)
             image.close()
-
-//        bitmap
+            bitmap.recycle()
         }
     }
 

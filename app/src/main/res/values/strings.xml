@@ -7,4 +7,6 @@
 
     <string name="button_overlay_start">Build an Overlay Network!</string>
     <string name="button_overlay_stop">Stop Service</string>
+
+    <string name="text_warning_width">Macroid is optimized for 720 pixels width.\nlower the resolution.</string>
 </resources>

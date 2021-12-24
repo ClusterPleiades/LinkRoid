@@ -18,6 +18,7 @@ import com.speedroid.macroid.ui.activity.ModeActivity
 class MacroidService : Service() {
     companion object {
         var isOverlaid: Boolean = false
+        var isClickable: Boolean = true
     }
 
     private lateinit var deviceController: DeviceController
@@ -83,8 +84,13 @@ class MacroidService : Service() {
 
         // set button view click listener
         buttonView.setOnClickListener {
-            val intent = Intent(this, ModeActivity::class.java)
-            startActivity(intent.addFlags(FLAG_ACTIVITY_NEW_TASK))
+            if (isClickable) {
+                // set clickable false
+                isClickable = false
+
+                val intent = Intent(this, ModeActivity::class.java)
+                startActivity(intent.addFlags(FLAG_ACTIVITY_NEW_TASK))
+            }
         }
 
         // set button view touch listener

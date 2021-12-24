@@ -7,6 +7,8 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_MODE
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
+import com.speedroid.macroid.service.MacroidService
 import com.speedroid.macroid.service.ProjectionService
 import java.util.*
 
@@ -74,6 +77,9 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
         dismiss()
+
+        // set clickable true
+        MacroidService.isClickable = true
     }
 
     private fun destroy() {
@@ -81,6 +87,9 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
             val parentActivity: Activity? = activity
             parentActivity?.finish()
         }
+
+        // set clickable true
+        MacroidService.isClickable = true
     }
 
     inner class DialogRecyclerAdapter : RecyclerView.Adapter<DialogRecyclerAdapter.DialogViewHolder>() {
@@ -97,7 +106,10 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
                     when (type) {
                         DIALOG_TYPE_MODE -> {
                             // TODO
-                            ProjectionService.getScreenProjection()
+                            val handler: Handler = Handler(Looper.getMainLooper())
+                            handler.postDelayed({
+                                ProjectionService.getScreenProjection()
+                            }, 1000)
                         }
                     }
 
