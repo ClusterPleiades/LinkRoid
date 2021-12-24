@@ -11,11 +11,12 @@ import com.speedroid.macroid.Configs.Companion.TOP_RIGHT
 import com.speedroid.macroid.service.ProjectionService
 import kotlin.math.sqrt
 
-class ImageController(private val context: Context) {
+class ImageController(private val context: Context, private val width:Int, private val height:Int) {
 
     fun findImage(drawableResId: Int, from: Int) {
         // initialize bitmap
         val screenBitmap = ProjectionService.getScreenProjection().extractAlpha()
+        // TODO resize?
         val targetBitmap = ContextCompat.getDrawable(context, drawableResId)!!.toBitmap().extractAlpha()
 
         val sWidth = screenBitmap.width
