@@ -35,12 +35,18 @@
         </activity>
 
         <activity
-            android:label=""
             android:name=".ui.activity.ModeActivity"
+            android:label=""
             android:theme="@style/AppTheme.DialogTheme.Transparent" />
 
         <service
             android:name=".service.MacroidService"
+            android:configChanges="orientation"
+            android:enabled="true"
+            android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
+
+        <service
+            android:name=".service.ProjectionService"
             android:configChanges="orientation"
             android:enabled="true"
             android:permission="android.permission.SYSTEM_ALERT_WINDOW" />

@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
+    android:foreground="?attr/selectableItemBackgroundBorderless"
     android:paddingStart="@dimen/margin_default"
     android:paddingTop="@dimen/margin_small"
     android:paddingEnd="@dimen/margin_default"

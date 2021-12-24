@@ -9,7 +9,7 @@ import android.os.IBinder
 import android.os.SystemClock
 import android.view.*
 import com.speedroid.macroid.Configs.Companion.CLICK_TIME_THRESHOLD
-import com.speedroid.macroid.Configs.Companion.NOTIFICATION_ID_FOREGROUND
+import com.speedroid.macroid.Configs.Companion.NOTIFICATION_ID_OVERLAY
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.NotificationController
 import com.speedroid.macroid.R
@@ -39,7 +39,7 @@ class MacroidService : Service() {
         deviceController = DeviceController(this)
 
         // start foreground with notification
-        startForeground(NOTIFICATION_ID_FOREGROUND, NotificationController(this).initializeNotification())
+        startForeground(NOTIFICATION_ID_OVERLAY, NotificationController(this).initializeNotification())
 
         // initialize service
         initializeService()

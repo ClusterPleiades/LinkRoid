@@ -1,21 +1,42 @@
 package com.speedroid.macroid.ui.activity
 
+import android.content.Context
 import android.content.Intent
+import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_OVERLAY
 import com.speedroid.macroid.R
 import com.speedroid.macroid.service.MacroidService
+import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.fragment.dialog.DefaultDialogFragment
 
+
 class MainActivity : AppCompatActivity() {
-    lateinit var overlayButton: Button
+    private lateinit var overlayButton: Button
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // initialize result launcher
+        resultLauncher = registerForActivityResult(StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                // start projection service
+                startService(ProjectionService.getStartIntent(this, RESULT_OK, result.data));
+
+                // start macroid service
+                startService(Intent(this, MacroidService::class.java))
+
+                // set overlay button text
+                overlayButton.setText(R.string.button_overlay_stop)
+            }
+        }
 
         overlayButton = findViewById(R.id.button_overlay)
         overlayButton.setOnClickListener {
@@ -23,13 +44,19 @@ class MainActivity : AppCompatActivity() {
             if (!Settings.canDrawOverlays(this))
                 requestOverlayPermission()
             else {
+                // case not overlaid
                 if (!MacroidService.isOverlaid) {
-                    // start service
-                    startService(Intent(this, MacroidService::class.java))
-                    overlayButton.setText(R.string.button_overlay_stop)
+                    // start projection
+                    val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                    resultLauncher.launch(projectionManager.createScreenCaptureIntent())
                 } else {
-                    // stop service
+                    // stop macroid service
                     stopService(Intent(this, MacroidService::class.java))
+
+                    // stop projection service
+                    startService(ProjectionService.getStopIntent(this));
+
+                    // set overlay button text
                     overlayButton.setText(R.string.button_overlay_start)
                 }
             }
