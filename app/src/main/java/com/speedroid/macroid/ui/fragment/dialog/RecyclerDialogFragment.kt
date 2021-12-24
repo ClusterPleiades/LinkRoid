@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_MODE
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
+import com.speedroid.macroid.macro.GateMacro
 import com.speedroid.macroid.service.MacroidService
 import com.speedroid.macroid.service.ProjectionService
 import java.util.*
@@ -105,11 +106,7 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
 
                     when (type) {
                         DIALOG_TYPE_MODE -> {
-                            // TODO
-                            val handler: Handler = Handler(Looper.getMainLooper())
-                            handler.postDelayed({
-                                ProjectionService.getScreenProjection()
-                            }, 1000)
+                            GateMacro(context!!).startMacro()
                         }
                     }
 

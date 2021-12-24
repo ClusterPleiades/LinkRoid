@@ -8,23 +8,26 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.PixelFormat
+import android.graphics.drawable.BitmapDrawable
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
-import android.media.Image
-import android.media.Image.Plane
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
+import androidx.core.content.ContextCompat
 import com.speedroid.macroid.Configs.Companion.NOTIFICATION_ID
 import com.speedroid.macroid.Configs.Companion.PROJECTION_NAME
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.NotificationController
+import com.speedroid.macroid.R
+import java.io.IOException
+import java.io.InputStream
 import java.nio.ByteBuffer
 import java.util.*
+import kotlin.experimental.and
 
 
 class ProjectionService : Service() {
@@ -47,7 +50,7 @@ class ProjectionService : Service() {
             return intent
         }
 
-        fun getScreenProjection() {
+        fun getScreenProjection(): Bitmap {
             val image = imageReader!!.acquireLatestImage()
             val planes = image.planes
             val buffer = planes[0].buffer
@@ -56,10 +59,11 @@ class ProjectionService : Service() {
             val rowStride = planes[0].rowStride
             val rowPadding: Int = rowStride - pixelStride * width
 
-            val bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888)
-            bitmap.copyPixelsFromBuffer(buffer)
+            val screenBitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888)
+            screenBitmap.copyPixelsFromBuffer(buffer)
+
             image.close()
-            bitmap.recycle()
+            return screenBitmap
         }
     }
 
@@ -141,12 +145,10 @@ class ProjectionService : Service() {
         height = deviceController.getHeightMax()
 
         // start capture reader
-        imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
-//        imageReader!!.setOnImageAvailableListener(ImageAvailableListener(), handler)
+        imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 1)
 
         // initialize virtual display
-        val virtualDisplayFlag = DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC
-        virtualDisplay = mediaProjection!!.createVirtualDisplay(PROJECTION_NAME, width, height, density, virtualDisplayFlag, imageReader!!.surface, null, handler)
+        virtualDisplay = mediaProjection!!.createVirtualDisplay(PROJECTION_NAME, width, height, density, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, imageReader!!.surface, null, handler)
     }
 
     private inner class MediaProjectionStopCallback : MediaProjection.Callback() {
@@ -156,6 +158,23 @@ class ProjectionService : Service() {
                 if (imageReader != null) imageReader!!.setOnImageAvailableListener(null, null)
                 mediaProjection!!.unregisterCallback(this@MediaProjectionStopCallback)
             }
+        }
+    }
+
+    private class ByteBufferBackedInputStream(var buffer: ByteBuffer) : InputStream() {
+
+        @Throws(IOException::class)
+        override fun read(): Int {
+            return if (!buffer.hasRemaining()) -1 else (buffer.get() and 0xFF.toByte()).toInt()
+        }
+
+        @Throws(IOException::class)
+        override fun read(bytes: ByteArray, offset: Int, length: Int): Int {
+            if (!buffer.hasRemaining()) return -1
+
+            val newLength = length.coerceAtMost(buffer.remaining())
+            buffer.get(bytes, offset, newLength)
+            return newLength
         }
     }
 }

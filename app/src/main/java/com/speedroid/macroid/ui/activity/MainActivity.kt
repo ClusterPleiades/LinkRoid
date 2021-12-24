@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                     stopService(Intent(this, MacroidService::class.java))
 
                     // stop projection service
-                    startService(ProjectionService.getStopIntent(this));
+                    startService(ProjectionService.getStopIntent(this))
 
                     // set overlay button text
                     overlayButton.setText(R.string.button_overlay_start)
