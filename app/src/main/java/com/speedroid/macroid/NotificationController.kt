@@ -6,15 +6,15 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import androidx.core.app.NotificationCompat
+import com.speedroid.macroid.Configs.Companion.NOTIFICATION_ID
 import com.speedroid.macroid.ui.activity.MainActivity
 
 
 class NotificationController(private val context: Context) {
     fun initializeNotification(): Notification {
         // create notification channel
-        val notificationChannel = NotificationChannel(Configs.NOTIFICATION_CHANNEL_ID, Configs.NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW)
+        val notificationChannel = NotificationChannel(NOTIFICATION_ID.toString(), NOTIFICATION_ID.toString(), NotificationManager.IMPORTANCE_LOW)
         (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(notificationChannel)
 
         // initialize notification click intent
@@ -23,7 +23,7 @@ class NotificationController(private val context: Context) {
         val clickPendingIntent = PendingIntent.getActivity(context, 0, clickIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT) // update only if already exist
 
         // initialize notification builder
-        val builder = NotificationCompat.Builder(context, Configs.NOTIFICATION_CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, NOTIFICATION_ID.toString())
         builder
             .setDefaults(Notification.DEFAULT_SOUND)
             .setVibrate(longArrayOf(0L)) // sound, vibrate, etc..

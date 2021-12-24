@@ -49,6 +49,6 @@
             android:name=".service.ProjectionService"
             android:configChanges="orientation"
             android:enabled="true"
-            android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
+            android:foregroundServiceType="mediaProjection"/>
     </application>
 </manifest>
