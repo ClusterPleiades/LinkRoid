@@ -2,23 +2,27 @@ package com.speedroid.macroid
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import com.speedroid.macroid.Configs.Companion.BOTTOM_LEFT
 import com.speedroid.macroid.Configs.Companion.BOTTOM_RIGHT
 import com.speedroid.macroid.Configs.Companion.MOVEMENT
 import com.speedroid.macroid.Configs.Companion.TOP_RIGHT
 import com.speedroid.macroid.service.ProjectionService
+import kotlin.math.abs
 import kotlin.math.sqrt
 
-class ImageController(private val context: Context, private val width:Int, private val height:Int) {
+class ImageController(private val context: Context, private val width: Int, private val height: Int) {
 
     fun findImage(drawableResId: Int, from: Int) {
-        // initialize bitmap
-        val screenBitmap = ProjectionService.getScreenProjection().extractAlpha()
-        // TODO resize?
-        val targetBitmap = ContextCompat.getDrawable(context, drawableResId)!!.toBitmap().extractAlpha()
+        // initialize screen bitmap
+        var screenBitmap = ProjectionService.getScreenProjection()
+        if (screenBitmap.width != width) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, width, height, true)
 
+        // initialize target bitmap
+        val targetBitmap = (ContextCompat.getDrawable(context, drawableResId) as BitmapDrawable).bitmap
+
+        // initialize width, height
         val sWidth = screenBitmap.width
         val sHeight = screenBitmap.height
         val tWidth = targetBitmap.width
@@ -49,10 +53,7 @@ class ImageController(private val context: Context, private val width:Int, priva
 
         // initialize target pixels
         val targetPixels = IntArray(tWidth * tHeight)
-        targetBitmap.getPixels(targetPixels, 0, 1, 0, 0, tWidth, tHeight)
-
-        // recycle target bitmap
-        targetBitmap.recycle()
+        targetBitmap.getPixels(targetPixels, 0, tWidth, 0, 0, tWidth, tHeight)
 
         // move x
         var x = startX
@@ -65,16 +66,21 @@ class ImageController(private val context: Context, private val width:Int, priva
 
                 // initialize crop pixels
                 val cropPixels = IntArray(tWidth * tHeight)
-                croppedBitmap.getPixels(cropPixels, 0, 1, 0, 0, tWidth, tHeight)
-
-                // recycle cropped bitmap
-                croppedBitmap.recycle()
+                croppedBitmap.getPixels(cropPixels, 0, tWidth, 0, 0, tWidth, tHeight)
 
                 // compute similarity
                 val similarity = computeSimilarity(targetPixels, cropPixels)
                 if (similarity >= 0.6) {
                     // TODO found
+
+                    // recycle bitmap
+                    screenBitmap.recycle()
+                    targetBitmap.recycle()
+                    croppedBitmap.recycle()
                 }
+
+                // recycle cropped bitmap
+                croppedBitmap.recycle()
 
                 y += moveY
             } while ((y >= 0) && (y + tHeight <= sHeight))
@@ -84,18 +90,43 @@ class ImageController(private val context: Context, private val width:Int, priva
 
     }
 
-    fun computeSimilarity(targetPixelArray: IntArray, croppedPixelArray: IntArray): Double {
-        var dotProduct = 0.0
-        var normASum = 0.0
-        var normBSum = 0.0
+    private fun saveImage(bitmap: Bitmap) {
+        val fileOutputStream = context.openFileOutput("temp.png", Context.MODE_PRIVATE)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
+        return
+    }
 
-        for (i in targetPixelArray.indices) {
-            dotProduct += targetPixelArray[i] * croppedPixelArray[i]
-            normASum += targetPixelArray[i] * targetPixelArray[i]
-            normBSum += croppedPixelArray[i] * croppedPixelArray[i]
+    private fun computeSimilarity(targetPixelArray: IntArray, croppedPixelArray: IntArray): Double {
+        // normalize pixel Arrays
+        val normalizedTargetPixelArray = normalize(targetPixelArray)
+        val normalizedCroppedPixelArray = normalize(croppedPixelArray)
+
+        // compute similarity
+        var dotProduct = 0.0
+        var targetSum = 0.0
+        var croppedSum = 0.0
+
+        for (i in normalizedTargetPixelArray.indices) {
+            dotProduct += normalizedTargetPixelArray[i] * normalizedCroppedPixelArray[i]
+            targetSum += normalizedTargetPixelArray[i] * normalizedTargetPixelArray[i]
+            croppedSum += normalizedCroppedPixelArray[i] * normalizedCroppedPixelArray[i]
         }
 
-        val eucledianDistance = sqrt(normASum) * sqrt(normBSum)
-        return dotProduct / eucledianDistance
+        return dotProduct / (sqrt(targetSum) * sqrt(croppedSum))
+    }
+
+    private fun normalize(intArray: IntArray): IntArray {
+        val normalizedIntArray = IntArray(intArray.size)
+
+        var max = 0.0
+        for (i in intArray.indices) {
+            val absolute = abs(intArray[i])
+            if (absolute > max) max = absolute.toDouble()
+        }
+
+        val scale = 32677.0 / max
+        for (i in intArray.indices) normalizedIntArray[i] = (intArray[i].toDouble() * scale).toInt()
+
+        return normalizedIntArray
     }
 }
