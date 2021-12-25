@@ -9,6 +9,8 @@ class Configs {
         const val DIALOG_TYPE_OVERLAY = 0
         const val DIALOG_TYPE_MODE = 10
 
+        const val DIALOG_POSITION_GATE = 0
+
         // notification
         const val NOTIFICATION_ID = 1000
 
@@ -19,12 +21,12 @@ class Configs {
         const val PROJECTION_NAME = "projection"
 
         // macro
-        const val TOP_LEFT = 0
-        const val TOP_RIGHT = 1
-        const val BOTTOM_LEFT = 2
-        const val BOTTOM_RIGHT = 3
-        const val MOVEMENT = 10
+        const val PHASE_NON_DUEL = 0
+        const val PHASE_DUEL = 1
 
-        const val SIMILARITY_THRESHOLD = 0.95
+        const val imageWidth = 100
+        const val imageHeight = 40
+
+        const val SIMILARITY_THRESHOLD = 0.98
     }
 }

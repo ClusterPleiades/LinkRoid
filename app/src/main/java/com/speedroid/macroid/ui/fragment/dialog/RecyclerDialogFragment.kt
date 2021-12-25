@@ -17,6 +17,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.speedroid.macroid.Configs
+import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_GATE
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_MODE
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
@@ -106,7 +108,11 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
 
                     when (type) {
                         DIALOG_TYPE_MODE -> {
-                            GateMacro(context!!).startMacro()
+                            when (adapterPosition) {
+                                DIALOG_POSITION_GATE -> {
+                                    GateMacro(context!!).startMacro()
+                                }
+                            }
                         }
                     }
 

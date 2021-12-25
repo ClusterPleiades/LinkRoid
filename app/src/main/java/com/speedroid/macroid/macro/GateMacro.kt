@@ -1,25 +1,133 @@
 package com.speedroid.macroid.macro
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Handler
-import android.os.Looper
-import com.speedroid.macroid.Configs.Companion.BOTTOM_LEFT
+import androidx.core.content.ContextCompat
+import com.speedroid.macroid.Configs.Companion.PHASE_DUEL
+import com.speedroid.macroid.Configs.Companion.PHASE_NON_DUEL
+import com.speedroid.macroid.Configs.Companion.SIMILARITY_THRESHOLD
+import com.speedroid.macroid.Configs.Companion.imageHeight
+import com.speedroid.macroid.Configs.Companion.imageWidth
 import com.speedroid.macroid.DeviceController
-import com.speedroid.macroid.ImageController
 import com.speedroid.macroid.R
+import com.speedroid.macroid.service.ProjectionService
+import kotlin.math.sqrt
 
 class GateMacro(private val context: Context) {
-    private lateinit var deviceController: DeviceController
-    private lateinit var imageController: ImageController
+    private val deviceController: DeviceController = DeviceController(context)
+    private val macroHandler = Handler(context.mainLooper!!)
 
-    fun startMacro() {
-        deviceController = DeviceController(context)
-        imageController = ImageController(context, deviceController.getWidthMax(), deviceController.getHeightMax())
+    private val width = deviceController.getWidthMax()
+    private val height = deviceController.getHeightMax()
+    private var phase = PHASE_NON_DUEL
 
-        val handler = Handler(Looper.myLooper()!!)
-        handler.postDelayed({
-            imageController.findImage(R.drawable.image_gate, BOTTOM_LEFT)
-        }, 1000)
+    private var nonDuelNormalizedPixelsArray: Array<DoubleArray?>
+
+    init {
+        // TODO update drawable ids
+        val nonDuelDrawableResIdArray = arrayOf(R.drawable.image_gate)
+
+        // initialize non duel bitmap array
+        val nonDuelBitmapArray: Array<Bitmap?> = arrayOfNulls(nonDuelDrawableResIdArray.size)
+        for (i in nonDuelBitmapArray.indices) {
+            nonDuelBitmapArray[i] = (ContextCompat.getDrawable(context, nonDuelDrawableResIdArray[i]) as BitmapDrawable).bitmap
+        }
+
+        // initialize non duel pixels array
+        val nonDuelPixelsArray: Array<IntArray?> = arrayOfNulls(nonDuelBitmapArray.size)
+        for (i in nonDuelPixelsArray.indices) {
+            nonDuelBitmapArray[i]!!.getPixels(nonDuelPixelsArray[i], 0, imageWidth, 0, 0, imageWidth, imageHeight)
+        }
+
+        // initialize non duel normalized pixels array
+        nonDuelNormalizedPixelsArray = arrayOfNulls(nonDuelPixelsArray.size)
+        for (i in nonDuelNormalizedPixelsArray.indices) {
+            nonDuelNormalizedPixelsArray[i] = normalize(nonDuelPixelsArray[i])
+        }
     }
 
+    fun startMacro() {
+        macroHandler.post {
+            while (true) {
+                if (phase == PHASE_DUEL) {
+
+                } else {
+                    val coordinate = findCoordinate()
+                    // TODO click
+                }
+            }
+        }
+    }
+
+    private fun findCoordinate(): Pair<Int, Int> {
+        // initialize screen bitmap
+        var screenBitmap = ProjectionService.getScreenProjection()
+        if (screenBitmap.width != width) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, width, height, true)
+
+        // move y
+        var y = height - imageHeight // start at bottom
+        do {
+            // move x
+            var x = width - imageWidth // start at end
+            do {
+                // crop screen bitmap
+                val croppedScreenBitmap = Bitmap.createBitmap(screenBitmap, x, y, imageWidth, imageHeight)
+                val croppedScreenPixels = IntArray(imageWidth * imageHeight)
+                croppedScreenBitmap.getPixels(croppedScreenPixels, 0, imageWidth, 0, 0, imageWidth, imageHeight)
+                val normalizedCroppedScreenPixels = normalize(croppedScreenPixels)
+
+                // compute similarity
+                for (i in nonDuelNormalizedPixelsArray.indices) {
+                    val similarity = computeSimilarity(nonDuelNormalizedPixelsArray[i], normalizedCroppedScreenPixels)
+                    if (similarity > SIMILARITY_THRESHOLD) {
+                        // recycle bitmaps
+                        screenBitmap.recycle()
+                        croppedScreenBitmap.recycle()
+
+                        // return center coordinate
+                        return Pair(x + imageWidth / 2, y + imageHeight / 2)
+                    }
+                }
+
+                // recycle cropped screen bitmap
+                croppedScreenBitmap.recycle()
+
+                x += 1
+            } while (x >= 0)
+            y += 1
+        } while (y >= 0)
+
+        // case not found
+        return findCoordinate() // recursive call
+    }
+
+    private fun normalize(pixelArray: IntArray?): DoubleArray {
+        val min = pixelArray!!.minOrNull()!!.toDouble()
+        val max = pixelArray.maxOrNull()!!.toDouble()
+        val normalizedArray = DoubleArray(pixelArray.size)
+        for (i in normalizedArray.indices) normalizedArray[i] = 1 - ((pixelArray[i] - min) / (max - min))
+        return normalizedArray
+    }
+
+    private fun computeSimilarity(normalizedIntArrayA: DoubleArray?, normalizedIntArrayB: DoubleArray): Double {
+        var dotProduct = 0.0
+        var sumA = 0.0
+        var sumB = 0.0
+
+        for (i in normalizedIntArrayA!!.indices) {
+            dotProduct += normalizedIntArrayA[i] * normalizedIntArrayB[i]
+            sumA += normalizedIntArrayA[i] * normalizedIntArrayA[i]
+            sumB += normalizedIntArrayB[i] * normalizedIntArrayB[i]
+        }
+
+        return dotProduct / (sqrt(sumA) * sqrt(sumB))
+    }
+
+    private fun saveImage(bitmap: Bitmap) {
+        val fileOutputStream = context.openFileOutput("temp.png", Context.MODE_PRIVATE)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
+        return
+    }
 }
