@@ -3,13 +3,14 @@ package com.speedroid.macroid
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.speedroid.macroid.Configs.Companion.BOTTOM_LEFT
 import com.speedroid.macroid.Configs.Companion.BOTTOM_RIGHT
 import com.speedroid.macroid.Configs.Companion.MOVEMENT
+import com.speedroid.macroid.Configs.Companion.SIMILARITY_THRESHOLD
 import com.speedroid.macroid.Configs.Companion.TOP_RIGHT
 import com.speedroid.macroid.service.ProjectionService
-import kotlin.math.abs
 import kotlin.math.sqrt
 
 class ImageController(private val context: Context, private val width: Int, private val height: Int) {
@@ -51,12 +52,14 @@ class ImageController(private val context: Context, private val width: Int, priv
             }
         }
 
-        // initialize target pixels
+        // initialize normalized target pixels
         val targetPixels = IntArray(tWidth * tHeight)
         targetBitmap.getPixels(targetPixels, 0, tWidth, 0, 0, tWidth, tHeight)
+        val normalizedTargetPixels = normalize(targetPixels)
 
         // move x
         var x = startX
+        var maxSimilarity = 0.0
         do {
             // move y
             var y = startY
@@ -64,30 +67,33 @@ class ImageController(private val context: Context, private val width: Int, priv
                 // crop image
                 val croppedBitmap = Bitmap.createBitmap(screenBitmap, x, y, tWidth, tHeight)
 
-                // initialize crop pixels
-                val cropPixels = IntArray(tWidth * tHeight)
-                croppedBitmap.getPixels(cropPixels, 0, tWidth, 0, 0, tWidth, tHeight)
+                // initialize normalized cropped pixels
+                val croppedPixels = IntArray(tWidth * tHeight)
+                croppedBitmap.getPixels(croppedPixels, 0, tWidth, 0, 0, tWidth, tHeight)
+                val normalizedCroppedPixels = normalize(croppedPixels)
 
                 // compute similarity
-                val similarity = computeSimilarity(targetPixels, cropPixels)
-                if (similarity >= 0.6) {
-                    // TODO found
+                val similarity = computeSimilarity(normalizedTargetPixels, normalizedCroppedPixels)
+                if (similarity > maxSimilarity) {
+                    // TODO
+                    Log.d("similarity", similarity.toString())
+                    
 
                     // recycle bitmap
-                    screenBitmap.recycle()
-                    targetBitmap.recycle()
-                    croppedBitmap.recycle()
+//                    screenBitmap.recycle()
+//                    targetBitmap.recycle()
+//                    croppedBitmap.recycle()
                 }
 
                 // recycle cropped bitmap
                 croppedBitmap.recycle()
 
                 y += moveY
+
             } while ((y >= 0) && (y + tHeight <= sHeight))
 
             x += moveX
         } while ((x >= 0) && (x + tWidth <= sWidth))
-
     }
 
     private fun saveImage(bitmap: Bitmap) {
@@ -96,37 +102,25 @@ class ImageController(private val context: Context, private val width: Int, priv
         return
     }
 
-    private fun computeSimilarity(targetPixelArray: IntArray, croppedPixelArray: IntArray): Double {
-        // normalize pixel Arrays
-        val normalizedTargetPixelArray = normalize(targetPixelArray)
-        val normalizedCroppedPixelArray = normalize(croppedPixelArray)
-
-        // compute similarity
-        var dotProduct = 0.0
-        var targetSum = 0.0
-        var croppedSum = 0.0
-
-        for (i in normalizedTargetPixelArray.indices) {
-            dotProduct += normalizedTargetPixelArray[i] * normalizedCroppedPixelArray[i]
-            targetSum += normalizedTargetPixelArray[i] * normalizedTargetPixelArray[i]
-            croppedSum += normalizedCroppedPixelArray[i] * normalizedCroppedPixelArray[i]
-        }
-
-        return dotProduct / (sqrt(targetSum) * sqrt(croppedSum))
+    private fun normalize(pixelArray: IntArray): DoubleArray {
+        val min = pixelArray.minOrNull()!!.toDouble()
+        val max = pixelArray.maxOrNull()!!.toDouble()
+        val normalizedArray = DoubleArray(pixelArray.size)
+        for (i in normalizedArray.indices) normalizedArray[i] = 1 - ((pixelArray[i] - min) / (max - min))
+        return normalizedArray
     }
 
-    private fun normalize(intArray: IntArray): IntArray {
-        val normalizedIntArray = IntArray(intArray.size)
+    private fun computeSimilarity(normalizedIntArrayA: DoubleArray, normalizedIntArrayB: DoubleArray): Double {
+        var dotProduct = 0.0
+        var sumA = 0.0
+        var sumB = 0.0
 
-        var max = 0.0
-        for (i in intArray.indices) {
-            val absolute = abs(intArray[i])
-            if (absolute > max) max = absolute.toDouble()
+        for (i in normalizedIntArrayA.indices) {
+            dotProduct += normalizedIntArrayA[i] * normalizedIntArrayB[i]
+            sumA += normalizedIntArrayA[i] * normalizedIntArrayA[i]
+            sumB += normalizedIntArrayB[i] * normalizedIntArrayB[i]
         }
 
-        val scale = 32677.0 / max
-        for (i in intArray.indices) normalizedIntArray[i] = (intArray[i].toDouble() * scale).toInt()
-
-        return normalizedIntArray
+        return dotProduct / (sqrt(sumA) * sqrt(sumB))
     }
 }

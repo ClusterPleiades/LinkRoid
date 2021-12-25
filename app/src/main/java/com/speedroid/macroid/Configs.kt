@@ -24,5 +24,7 @@ class Configs {
         const val BOTTOM_LEFT = 2
         const val BOTTOM_RIGHT = 3
         const val MOVEMENT = 10
+
+        const val SIMILARITY_THRESHOLD = 0.95
     }
 }
