@@ -1,8 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityEventTypes="typeAllMask"
-    android:accessibilityFeedbackType="feedbackGeneric"
-    android:accessibilityFlags="flagDefault"
+    android:accessibilityFeedbackType="feedbackSpoken"
+    android:accessibilityFlags="flagReportViewIds"
+    android:canPerformGestures="true"
+    android:canRequestTouchExplorationMode="true"
     android:canRetrieveWindowContent="true"
+    android:description="@string/accessibility_service_description"
     android:notificationTimeout="100"
-    android:settingsActivity=".MainActivity" />
+    android:packageNames="com.speedroid.macroid"
+    android:settingsActivity="com.speedroid.macroid.ui.activity.MainActivity" />

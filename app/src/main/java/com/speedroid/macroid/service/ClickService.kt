@@ -13,22 +13,22 @@ class ClickService : AccessibilityService() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         // get coordinate
-        val x = intent.getIntExtra("x", 0)
-        val y = intent.getIntExtra("y", 0)
-
-        // initialize builder
-        val builder = GestureDescription.Builder()
+        val x = intent.getIntExtra("x", 0).toFloat()
+        val y = intent.getIntExtra("y", 0).toFloat()
 
         // initialize path
         val path = Path()
-        path.moveTo(x.toFloat(), y.toFloat())
+        path.moveTo(x, y)
+        path.lineTo(x, y)
 
         // initialize stroke
-        val strokeDescription = StrokeDescription(path, 0, 500)
-        builder.addStroke(strokeDescription)
+
+        // initialize builder
+        val gestureDescriptionBuilder = GestureDescription.Builder()
+        gestureDescriptionBuilder.addStroke(StrokeDescription(path, 0, 100))
 
         // dispatch gesture
-        dispatchGesture(builder.build(), null, null)
+        dispatchGesture(gestureDescriptionBuilder.build(), null, null)
 
         // stop self
         stopSelf()

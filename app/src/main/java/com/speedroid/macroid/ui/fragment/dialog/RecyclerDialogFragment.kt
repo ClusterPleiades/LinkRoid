@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -12,15 +13,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_GATE
+import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_STOP
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_MODE
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.GateMacro
 import com.speedroid.macroid.service.OverlayService
+import com.speedroid.macroid.service.ProjectionService
 import java.util.*
 
 class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.DialogFragment() {
@@ -105,8 +109,16 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
                     when (type) {
                         DIALOG_TYPE_MODE -> {
                             when (adapterPosition) {
-                                DIALOG_POSITION_GATE -> {
-                                    GateMacro(context!!).startMacro()
+                                DIALOG_POSITION_GATE -> GateMacro(context!!).startMacro()
+                                DIALOG_POSITION_STOP -> {
+                                    // stop overlay service
+                                    context!!.stopService(Intent(context, OverlayService::class.java))
+
+                                    // stop projection service
+                                    context!!.startService(ProjectionService.getStopIntent(context))
+
+                                    // stop handler
+                                    GateMacro.macroHandler.removeMessages(0)
                                 }
                             }
                         }
@@ -136,6 +148,10 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
         override fun onBindViewHolder(holder: DialogViewHolder, position: Int) {
             // set text view
             holder.textView.text = textArray[position]
+
+            // set text color
+            val colorResId = if(position == DIALOG_POSITION_STOP) R.color.color_red else R.color.color_dark_gray
+            holder.textView.setTextColor(ContextCompat.getColor(context!!, colorResId))
         }
 
         override fun getItemCount(): Int {

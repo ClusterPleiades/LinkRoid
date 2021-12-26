@@ -3,9 +3,11 @@ package com.speedroid.macroid.macro
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import android.os.Handler
 import androidx.core.content.ContextCompat
+import com.speedroid.macroid.Configs.Companion.DELAY_START
 import com.speedroid.macroid.Configs.Companion.PHASE_DUEL
 import com.speedroid.macroid.Configs.Companion.PHASE_NON_DUEL
 import com.speedroid.macroid.Configs.Companion.SIMILARITY_THRESHOLD
@@ -14,13 +16,15 @@ import com.speedroid.macroid.Configs.Companion.imageWidth
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
 import com.speedroid.macroid.service.ClickService
-import com.speedroid.macroid.service.OverlayService
 import com.speedroid.macroid.service.ProjectionService
 import kotlin.math.sqrt
 
 class GateMacro(private val context: Context) {
+    companion object {
+        lateinit var macroHandler: Handler
+    }
+
     private val deviceController: DeviceController = DeviceController(context)
-    private val macroHandler = Handler(context.mainLooper!!)
 
     private val width = deviceController.getWidthMax()
     private val height = deviceController.getHeightMax()
@@ -30,18 +34,22 @@ class GateMacro(private val context: Context) {
 
     init {
         // TODO update drawable ids
-        val nonDuelDrawableResIdArray = arrayOf(R.drawable.image_gate)
+        val nonDuelDrawableResIdArrayList = ArrayList<Int>()
+        nonDuelDrawableResIdArrayList.add(R.drawable.image_gate)
 
         // initialize non duel bitmap array
-        val nonDuelBitmapArray: Array<Bitmap?> = arrayOfNulls(nonDuelDrawableResIdArray.size)
+        val nonDuelBitmapArray: Array<Bitmap?> = arrayOfNulls(nonDuelDrawableResIdArrayList.size)
         for (i in nonDuelBitmapArray.indices) {
-            nonDuelBitmapArray[i] = (ContextCompat.getDrawable(context, nonDuelDrawableResIdArray[i]) as BitmapDrawable).bitmap
+            nonDuelBitmapArray[i] = (ContextCompat.getDrawable(context, nonDuelDrawableResIdArrayList[i]) as BitmapDrawable).bitmap
         }
 
         // initialize non duel pixels array
         val nonDuelPixelsArray: Array<IntArray?> = arrayOfNulls(nonDuelBitmapArray.size)
+        var pixels: IntArray
         for (i in nonDuelPixelsArray.indices) {
-            nonDuelBitmapArray[i]!!.getPixels(nonDuelPixelsArray[i], 0, imageWidth, 0, 0, imageWidth, imageHeight)
+            pixels = IntArray(imageWidth * imageHeight)
+            nonDuelBitmapArray[i]!!.getPixels(pixels, 0, imageWidth, 0, 0, imageWidth, imageHeight)
+            nonDuelPixelsArray[i] = pixels
         }
 
         // initialize non duel normalized pixels array
@@ -52,22 +60,23 @@ class GateMacro(private val context: Context) {
     }
 
     fun startMacro() {
-        macroHandler.post {
+        macroHandler = Handler(context.mainLooper!!)
+        macroHandler.postDelayed({
             while (true) {
                 if (phase == PHASE_DUEL) {
 
                 } else {
                     val coordinate = findCoordinate()
                     val intent = Intent(context, ClickService::class.java)
-                    intent.putExtra("x", coordinate.first)
-                    intent.putExtra("y", coordinate.second)
+                    intent.putExtra("x", coordinate.x)
+                    intent.putExtra("y", coordinate.y)
                     context.startService(intent)
                 }
             }
-        }
+        }, DELAY_START)
     }
 
-    private fun findCoordinate(): Pair<Int, Int> {
+    private fun findCoordinate(): Point {
         // initialize screen bitmap
         var screenBitmap = ProjectionService.getScreenProjection()
         if (screenBitmap.width != width) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, width, height, true)
@@ -93,7 +102,7 @@ class GateMacro(private val context: Context) {
                         croppedScreenBitmap.recycle()
 
                         // return center coordinate
-                        return Pair(x + imageWidth / 2, y + imageHeight / 2)
+                        return Point(x + imageWidth / 2, y + imageHeight / 2)
                     }
                 }
 
@@ -102,7 +111,7 @@ class GateMacro(private val context: Context) {
 
                 x += 1
             } while (x <= width - imageWidth)
-            y += 1
+            y -= 1
         } while (y >= 0)
 
         // case not found

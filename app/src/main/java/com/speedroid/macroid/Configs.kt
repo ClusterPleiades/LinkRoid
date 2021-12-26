@@ -7,9 +7,11 @@ class Configs {
 
         // dialog
         const val DIALOG_TYPE_OVERLAY = 0
+        const val DIALOG_TYPE_ACCESS = 1
         const val DIALOG_TYPE_MODE = 10
 
         const val DIALOG_POSITION_GATE = 0
+        const val DIALOG_POSITION_STOP = 1
 
         // notification
         const val NOTIFICATION_ID = 1000
@@ -27,6 +29,7 @@ class Configs {
         const val imageWidth = 100
         const val imageHeight = 40
 
+        const val DELAY_START = 500L
         const val SIMILARITY_THRESHOLD = 0.98
     }
 }

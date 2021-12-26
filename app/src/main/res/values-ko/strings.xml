@@ -3,10 +3,14 @@
 
     <string name="dialog_cancel">취소</string>
     <string name="dialog_confirm">확인</string>
-    <string name="dialog_message_overlay">서비스 제공을 위해 Macroid의 오버레이를 허용해 주세요.</string>
+    <string name="dialog_message_overlay">Macroid의 오버레이를 허용해 주세요.</string>
+    <string name="dialog_message_access">Macroid의 접근성 서비스를 허용해 주세요.</string>
 
     <string name="button_overlay_start">오버레이 네트워크를 구축!</string>
     <string name="button_overlay_stop">서비스 중지</string>
 
     <string name="text_warning_width">Macroid는 가로 720픽셀에 최적화되어있습니다.\n해상도를 낮춰 주세요.</string>
+
+    <!-- service -->
+    <string name="accessibility_service_description">click service</string>
 </resources>

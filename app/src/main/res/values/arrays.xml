@@ -2,5 +2,6 @@
 <resources>
     <string-array name="array_mode">
         <item>Gate</item>
+        <item>Stop Service</item>
     </string-array>
 </resources>

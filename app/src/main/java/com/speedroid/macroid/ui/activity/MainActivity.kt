@@ -18,6 +18,11 @@ import com.speedroid.macroid.R
 import com.speedroid.macroid.service.OverlayService
 import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.fragment.dialog.DefaultDialogFragment
+import android.accessibilityservice.AccessibilityServiceInfo
+
+import android.view.accessibility.AccessibilityManager
+import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_ACCESS
+import com.speedroid.macroid.macro.GateMacro
 
 
 class MainActivity : AppCompatActivity() {
@@ -35,39 +40,37 @@ class MainActivity : AppCompatActivity() {
                 // start projection service
                 startService(ProjectionService.getStartIntent(this, RESULT_OK, result.data));
 
-                // start macroid service
+                // start overlay service
                 startService(Intent(this, OverlayService::class.java))
 
                 // set overlay button text
                 overlayButton.setText(R.string.button_overlay_stop)
 
                 // finish application to prevent back to application
-                finish()
+                finishAffinity()
             }
         }
 
         // initialize overlay button
         overlayButton = findViewById(R.id.button_overlay)
         overlayButton.setOnClickListener {
-            // check overlay permission
-            if (!Settings.canDrawOverlays(this))
-                requestOverlayPermission()
-            else {
-                // case not overlaid
-                if (!OverlayService.isOverlaid) {
-                    // start projection
-                    val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-                    resultLauncher.launch(projectionManager.createScreenCaptureIntent())
-                } else {
-                    // stop macroid service
-                    stopService(Intent(this, OverlayService::class.java))
+            // case not overlaid
+            if (!OverlayService.isOverlaid) {
+                // start projection
+                val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                resultLauncher.launch(projectionManager.createScreenCaptureIntent())
+            } else {
+                // stop overlay service
+                stopService(Intent(this, OverlayService::class.java))
 
-                    // stop projection service
-                    startService(ProjectionService.getStopIntent(this))
+                // stop projection service
+                startService(ProjectionService.getStopIntent(this))
 
-                    // set overlay button text
-                    overlayButton.setText(R.string.button_overlay_start)
-                }
+                // stop handler
+                GateMacro.macroHandler.removeMessages(0)
+
+                // set overlay button text
+                overlayButton.setText(R.string.button_overlay_start)
             }
         }
 
@@ -79,7 +82,28 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         // check overlay permission
-        if (!Settings.canDrawOverlays(this)) requestOverlayPermission()
+        if (!Settings.canDrawOverlays(this)) {
+            val defaultDialogFragment = DefaultDialogFragment(DIALOG_TYPE_OVERLAY)
+            defaultDialogFragment.show(supportFragmentManager, DIALOG_TYPE_OVERLAY.toString())
+        }
+        // check accessibility permission
+        else {
+            val accessibilityManager = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
+            val list = accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+
+            var accessible = false
+            for (i in list.indices) {
+                if (list[i].resolveInfo.serviceInfo.packageName == application.packageName) {
+                    accessible = true
+                    break
+                }
+            }
+
+            if (!accessible) {
+                val defaultDialogFragment = DefaultDialogFragment(DIALOG_TYPE_ACCESS)
+                defaultDialogFragment.show(supportFragmentManager, DIALOG_TYPE_ACCESS.toString())
+            }
+        }
 
         // set overlay button text
         if (OverlayService.isOverlaid) overlayButton.setText(R.string.button_overlay_stop)
@@ -88,11 +112,5 @@ class MainActivity : AppCompatActivity() {
         // set warning visibility
         if (DeviceController(this).getWidthMax() >= WIDTH_THRESHOLD) warningTextView.visibility = View.VISIBLE
         else warningTextView.visibility = View.GONE
-    }
-
-    private fun requestOverlayPermission() {
-        // show overlay dialog
-        val defaultDialogFragment = DefaultDialogFragment(DIALOG_TYPE_OVERLAY)
-        defaultDialogFragment.show(supportFragmentManager, DIALOG_TYPE_OVERLAY.toString())
     }
 }
