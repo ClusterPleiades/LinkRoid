@@ -1,28 +1,27 @@
 package com.speedroid.macroid.ui.activity
 
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import android.view.accessibility.AccessibilityManager
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
+import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_ACCESS
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_OVERLAY
-import com.speedroid.macroid.Configs.Companion.WIDTH_THRESHOLD
+import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
+import com.speedroid.macroid.macro.GateMacro
 import com.speedroid.macroid.service.OverlayService
 import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.fragment.dialog.DefaultDialogFragment
-import android.accessibilityservice.AccessibilityServiceInfo
-
-import android.view.accessibility.AccessibilityManager
-import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_ACCESS
-import com.speedroid.macroid.macro.GateMacro
 
 
 class MainActivity : AppCompatActivity() {
@@ -111,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         else overlayButton.setText(R.string.button_overlay_start)
 
         // set warning visibility
-        if (DeviceController(this).getWidthMax() >= WIDTH_THRESHOLD) warningTextView.visibility = View.VISIBLE
+        if (DeviceController(this).getWidthMax() >= IMAGE_WIDTH) warningTextView.visibility = View.VISIBLE
         else warningTextView.visibility = View.GONE
     }
 }

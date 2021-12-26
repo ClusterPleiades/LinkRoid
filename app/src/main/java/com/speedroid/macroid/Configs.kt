@@ -2,9 +2,6 @@ package com.speedroid.macroid
 
 class Configs {
     companion object {
-        // warning
-        const val WIDTH_THRESHOLD = 1080
-
         // dialog
         const val DIALOG_TYPE_OVERLAY = 0
         const val DIALOG_TYPE_ACCESS = 1
@@ -23,13 +20,14 @@ class Configs {
         const val PROJECTION_NAME = "projection"
 
         // macro
-        const val PHASE_NON_DUEL = 0
-        const val PHASE_DUEL = 1
-
-        const val imageWidth = 100
-        const val imageHeight = 40
+        const val IMAGE_WIDTH = 720
+        const val IMAGE_HEIGHT = 40
+        const val IMAGE_STRIDE = 2
 
         const val DELAY_START = 500L
-        const val SIMILARITY_THRESHOLD = 0.98
+        const val DELAY_INTERVAL = 1000L
+        const val SIMILARITY_THRESHOLD = 0.7
+
+        const val DRAWABLE_POSITION_GATE = 0
     }
 }
