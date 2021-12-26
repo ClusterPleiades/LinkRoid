@@ -160,21 +160,4 @@ class ProjectionService : Service() {
             }
         }
     }
-
-    private class ByteBufferBackedInputStream(var buffer: ByteBuffer) : InputStream() {
-
-        @Throws(IOException::class)
-        override fun read(): Int {
-            return if (!buffer.hasRemaining()) -1 else (buffer.get() and 0xFF.toByte()).toInt()
-        }
-
-        @Throws(IOException::class)
-        override fun read(bytes: ByteArray, offset: Int, length: Int): Int {
-            if (!buffer.hasRemaining()) return -1
-
-            val newLength = length.coerceAtMost(buffer.remaining())
-            buffer.get(bytes, offset, newLength)
-            return newLength
-        }
-    }
 }

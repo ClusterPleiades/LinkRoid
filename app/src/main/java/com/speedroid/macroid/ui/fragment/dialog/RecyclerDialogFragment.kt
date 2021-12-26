@@ -7,8 +7,6 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,14 +15,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.speedroid.macroid.Configs
 import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_GATE
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_MODE
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.GateMacro
-import com.speedroid.macroid.service.MacroidService
-import com.speedroid.macroid.service.ProjectionService
+import com.speedroid.macroid.service.OverlayService
 import java.util.*
 
 class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.DialogFragment() {
@@ -82,7 +78,7 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
         dismiss()
 
         // set clickable true
-        MacroidService.isClickable = true
+        OverlayService.isClickable = true
     }
 
     private fun destroy() {
@@ -92,7 +88,7 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
         }
 
         // set clickable true
-        MacroidService.isClickable = true
+        OverlayService.isClickable = true
     }
 
     inner class DialogRecyclerAdapter : RecyclerView.Adapter<DialogRecyclerAdapter.DialogViewHolder>() {

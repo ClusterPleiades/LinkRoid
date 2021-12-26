@@ -1,6 +1,7 @@
 package com.speedroid.macroid.macro
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Handler
@@ -12,6 +13,8 @@ import com.speedroid.macroid.Configs.Companion.imageHeight
 import com.speedroid.macroid.Configs.Companion.imageWidth
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
+import com.speedroid.macroid.service.ClickService
+import com.speedroid.macroid.service.OverlayService
 import com.speedroid.macroid.service.ProjectionService
 import kotlin.math.sqrt
 
@@ -55,7 +58,10 @@ class GateMacro(private val context: Context) {
 
                 } else {
                     val coordinate = findCoordinate()
-                    // TODO click
+                    val intent = Intent(context, ClickService::class.java)
+                    intent.putExtra("x", coordinate.first)
+                    intent.putExtra("y", coordinate.second)
+                    context.startService(intent)
                 }
             }
         }
@@ -70,7 +76,7 @@ class GateMacro(private val context: Context) {
         var y = height - imageHeight // start at bottom
         do {
             // move x
-            var x = width - imageWidth // start at end
+            var x = 0 // start at left
             do {
                 // crop screen bitmap
                 val croppedScreenBitmap = Bitmap.createBitmap(screenBitmap, x, y, imageWidth, imageHeight)
@@ -95,7 +101,7 @@ class GateMacro(private val context: Context) {
                 croppedScreenBitmap.recycle()
 
                 x += 1
-            } while (x >= 0)
+            } while (x <= width - imageWidth)
             y += 1
         } while (y >= 0)
 

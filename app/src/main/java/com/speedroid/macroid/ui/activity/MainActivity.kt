@@ -15,7 +15,7 @@ import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_OVERLAY
 import com.speedroid.macroid.Configs.Companion.WIDTH_THRESHOLD
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
-import com.speedroid.macroid.service.MacroidService
+import com.speedroid.macroid.service.OverlayService
 import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.fragment.dialog.DefaultDialogFragment
 
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                 startService(ProjectionService.getStartIntent(this, RESULT_OK, result.data));
 
                 // start macroid service
-                startService(Intent(this, MacroidService::class.java))
+                startService(Intent(this, OverlayService::class.java))
 
                 // set overlay button text
                 overlayButton.setText(R.string.button_overlay_stop)
@@ -54,13 +54,13 @@ class MainActivity : AppCompatActivity() {
                 requestOverlayPermission()
             else {
                 // case not overlaid
-                if (!MacroidService.isOverlaid) {
+                if (!OverlayService.isOverlaid) {
                     // start projection
                     val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
                     resultLauncher.launch(projectionManager.createScreenCaptureIntent())
                 } else {
                     // stop macroid service
-                    stopService(Intent(this, MacroidService::class.java))
+                    stopService(Intent(this, OverlayService::class.java))
 
                     // stop projection service
                     startService(ProjectionService.getStopIntent(this))
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         if (!Settings.canDrawOverlays(this)) requestOverlayPermission()
 
         // set overlay button text
-        if (MacroidService.isOverlaid) overlayButton.setText(R.string.button_overlay_stop)
+        if (OverlayService.isOverlaid) overlayButton.setText(R.string.button_overlay_stop)
         else overlayButton.setText(R.string.button_overlay_start)
 
         // set warning visibility

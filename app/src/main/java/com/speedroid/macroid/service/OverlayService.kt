@@ -15,7 +15,7 @@ import com.speedroid.macroid.NotificationController
 import com.speedroid.macroid.R
 import com.speedroid.macroid.ui.activity.ModeActivity
 
-class MacroidService : Service() {
+class OverlayService : Service() {
     companion object {
         var isOverlaid: Boolean = false
         var isClickable: Boolean = true

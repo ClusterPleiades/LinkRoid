@@ -14,7 +14,7 @@ class Configs {
         // notification
         const val NOTIFICATION_ID = 1000
 
-        // macroid service
+        // overlay service
         const val CLICK_TIME_THRESHOLD = 100
 
         // projection service

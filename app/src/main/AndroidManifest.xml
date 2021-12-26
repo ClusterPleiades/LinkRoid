@@ -40,7 +40,7 @@
             android:theme="@style/AppTheme.DialogTheme.Transparent" />
 
         <service
-            android:name=".service.MacroidService"
+            android:name=".service.OverlayService"
             android:configChanges="orientation"
             android:enabled="true"
             android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -49,6 +49,19 @@
             android:name=".service.ProjectionService"
             android:configChanges="orientation"
             android:enabled="true"
-            android:foregroundServiceType="mediaProjection"/>
+            android:foregroundServiceType="mediaProjection" />
+
+        <service
+            android:name=".service.ClickService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibility's"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
     </application>
 </manifest>
