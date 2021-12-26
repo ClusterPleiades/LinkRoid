@@ -8,7 +8,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Handler
 import androidx.core.content.ContextCompat
 import com.speedroid.macroid.Configs.Companion.DELAY_START
-import com.speedroid.macroid.Configs.Companion.PHASE_DUEL
 import com.speedroid.macroid.Configs.Companion.PHASE_NON_DUEL
 import com.speedroid.macroid.Configs.Companion.SIMILARITY_THRESHOLD
 import com.speedroid.macroid.Configs.Companion.imageHeight
@@ -17,20 +16,21 @@ import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
 import com.speedroid.macroid.service.ClickService
 import com.speedroid.macroid.service.ProjectionService
+import com.speedroid.macroid.ui.activity.SplashActivity.Companion.preservedContext
 import kotlin.math.sqrt
 
-class GateMacro(private val context: Context) {
+class GateMacro {
     companion object {
-        lateinit var macroHandler: Handler
+        var macroHandler: Handler? = null
+        var phase = PHASE_NON_DUEL
     }
 
-    private val deviceController: DeviceController = DeviceController(context)
+    private var nonDuelNormalizedPixelsArray: Array<DoubleArray?>
+    private var runnable: Runnable
 
+    private val deviceController: DeviceController = DeviceController(preservedContext)
     private val width = deviceController.getWidthMax()
     private val height = deviceController.getHeightMax()
-    private var phase = PHASE_NON_DUEL
-
-    private var nonDuelNormalizedPixelsArray: Array<DoubleArray?>
 
     init {
         // TODO update drawable ids
@@ -40,7 +40,7 @@ class GateMacro(private val context: Context) {
         // initialize non duel bitmap array
         val nonDuelBitmapArray: Array<Bitmap?> = arrayOfNulls(nonDuelDrawableResIdArrayList.size)
         for (i in nonDuelBitmapArray.indices) {
-            nonDuelBitmapArray[i] = (ContextCompat.getDrawable(context, nonDuelDrawableResIdArrayList[i]) as BitmapDrawable).bitmap
+            nonDuelBitmapArray[i] = (ContextCompat.getDrawable(preservedContext, nonDuelDrawableResIdArrayList[i]) as BitmapDrawable).bitmap
         }
 
         // initialize non duel pixels array
@@ -57,26 +57,31 @@ class GateMacro(private val context: Context) {
         for (i in nonDuelNormalizedPixelsArray.indices) {
             nonDuelNormalizedPixelsArray[i] = normalize(nonDuelPixelsArray[i])
         }
-    }
 
-    fun startMacro() {
-        macroHandler = Handler(context.mainLooper!!)
-        macroHandler.postDelayed({
-            while (true) {
-                if (phase == PHASE_DUEL) {
+        // initialize phase
+        phase = PHASE_NON_DUEL
 
-                } else {
-                    val coordinate = findCoordinate()
-                    val intent = Intent(context, ClickService::class.java)
+        // initialize handler
+        macroHandler = Handler(preservedContext.mainLooper!!)
+
+        // initialize runnable
+        runnable = object : Runnable {
+            override fun run() {
+                val coordinate = findCoordinate()
+                if (coordinate != null) {
+                    val intent = Intent(preservedContext, ClickService::class.java)
                     intent.putExtra("x", coordinate.x)
                     intent.putExtra("y", coordinate.y)
-                    context.startService(intent)
+                    preservedContext.startService(intent)
                 }
+
+                // run again
+                macroHandler!!.postDelayed(this, DELAY_START)
             }
-        }, DELAY_START)
+        }
     }
 
-    private fun findCoordinate(): Point {
+    private fun findCoordinate(): Point? {
         // initialize screen bitmap
         var screenBitmap = ProjectionService.getScreenProjection()
         if (screenBitmap.width != width) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, width, height, true)
@@ -115,7 +120,7 @@ class GateMacro(private val context: Context) {
         } while (y >= 0)
 
         // case not found
-        return findCoordinate() // recursive call
+        return null
     }
 
     private fun normalize(pixelArray: IntArray?): DoubleArray {
@@ -141,8 +146,12 @@ class GateMacro(private val context: Context) {
     }
 
     private fun saveImage(bitmap: Bitmap) {
-        val fileOutputStream = context.openFileOutput("temp.png", Context.MODE_PRIVATE)
+        val fileOutputStream = preservedContext.openFileOutput("temp.png", Context.MODE_PRIVATE)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
         return
+    }
+
+    fun startMacro() {
+        macroHandler!!.postDelayed(runnable, DELAY_START)
     }
 }

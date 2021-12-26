@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                 overlayButton.setText(R.string.button_overlay_stop)
 
                 // finish application to prevent back to application
-                finishAffinity()
+                finish()
             }
         }
 
@@ -67,7 +67,8 @@ class MainActivity : AppCompatActivity() {
                 startService(ProjectionService.getStopIntent(this))
 
                 // stop handler
-                GateMacro.macroHandler.removeMessages(0)
+                if (GateMacro.macroHandler != null)
+                    GateMacro.macroHandler!!.removeMessages(0)
 
                 // set overlay button text
                 overlayButton.setText(R.string.button_overlay_start)
