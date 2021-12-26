@@ -26,8 +26,9 @@ class Configs {
 
         const val DELAY_START = 500L
         const val DELAY_INTERVAL = 1000L
-        const val SIMILARITY_THRESHOLD = 0.7
 
-        const val DRAWABLE_POSITION_GATE = 0
+        // village
+        const val DRAWABLE_POSITION_BUTTON_GATE = 0
+        const val DRAWABLE_POSITION_BUTTON_DUEL = 1
     }
 }

@@ -2,6 +2,7 @@ package com.speedroid.macroid.macro
 
 import android.content.Intent
 import android.os.Handler
+import android.util.Log
 import com.speedroid.macroid.Configs.Companion.DELAY_INTERVAL
 import com.speedroid.macroid.Configs.Companion.DELAY_START
 import com.speedroid.macroid.ImageController
@@ -11,6 +12,8 @@ import com.speedroid.macroid.ui.activity.SplashActivity.Companion.preservedConte
 class GateMacro {
     companion object {
         var macroHandler: Handler? = null
+        var duelButtonDetectCount = 0
+        var isDuel = false
     }
 
     private val imageController: ImageController = ImageController()
@@ -23,11 +26,15 @@ class GateMacro {
         // initialize runnable
         object : Runnable {
             override fun run() {
-                val coordinate = imageController.findCoordinate()
-                if (coordinate != null) {
+                if (isDuel) {
+
+                } else {
+                    val coordinate = imageController.findCoordinate()
                     val intent = Intent(preservedContext, ClickService::class.java)
                     intent.putExtra("x", coordinate.x)
                     intent.putExtra("y", coordinate.y)
+
+                    // click
                     preservedContext.startService(intent)
                 }
 

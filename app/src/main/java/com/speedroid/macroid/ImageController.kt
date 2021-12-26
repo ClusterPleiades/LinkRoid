@@ -4,11 +4,12 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.content.ContextCompat
-import com.speedroid.macroid.Configs.Companion.DRAWABLE_POSITION_GATE
+import com.speedroid.macroid.Configs.Companion.DRAWABLE_POSITION_BUTTON_DUEL
+import com.speedroid.macroid.Configs.Companion.DRAWABLE_POSITION_BUTTON_GATE
 import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT
 import com.speedroid.macroid.Configs.Companion.IMAGE_STRIDE
 import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
-import com.speedroid.macroid.Configs.Companion.SIMILARITY_THRESHOLD
+import com.speedroid.macroid.macro.GateMacro
 import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.activity.SplashActivity.Companion.preservedContext
 import kotlin.math.sqrt
@@ -18,17 +19,23 @@ class ImageController {
     private val width = deviceController.getWidthMax()
     private val height = deviceController.getHeightMax()
 
-    private var pixelsArray: Array<DoubleArray?>
+    lateinit var villagePixelsArray: Array<DoubleArray?>
+
+    // TODO update drawable resource ids
+    private val villageDrawableResIdArray = arrayOf(
+        R.drawable.image_button_gate,
+        R.drawable.image_button_duel
+    )
 
     init {
-        // TODO update drawable resource ids
-        val drawableResIdArrayList = ArrayList<Int>()
-        drawableResIdArrayList.add(R.drawable.image_gate)
+        initializeVillagePixelsArray()
+    }
 
+    private fun initializeVillagePixelsArray() {
         // initialize bitmap array
-        val bitmapArray: Array<Bitmap?> = arrayOfNulls(drawableResIdArrayList.size)
+        val bitmapArray: Array<Bitmap?> = arrayOfNulls(villageDrawableResIdArray.size)
         for (i in bitmapArray.indices) {
-            bitmapArray[i] = (ContextCompat.getDrawable(preservedContext, drawableResIdArrayList[i]) as BitmapDrawable).bitmap
+            bitmapArray[i] = (ContextCompat.getDrawable(preservedContext, villageDrawableResIdArray[i]) as BitmapDrawable).bitmap
         }
 
         // initialize pixels array
@@ -41,41 +48,22 @@ class ImageController {
         }
 
         // normalize pixels array
-        this.pixelsArray = arrayOfNulls(pixelsArray.size)
-        for (i in pixelsArray.indices) {
-            this.pixelsArray[i] = normalize(pixelsArray[i])
-        }
+        villagePixelsArray = arrayOfNulls(pixelsArray.size)
+        for (i in pixelsArray.indices)
+            villagePixelsArray[i] = normalize(pixelsArray[i])
 
         // recycler bitmap array
         for (i in bitmapArray.indices) bitmapArray[i]!!.recycle()
     }
 
-    fun findCoordinate(): Point? {
-        // initialize image info
-        val detectedImage = detectImage()
-
-        // return coordinate
-        return if (detectedImage == null)
-            null
-        // TODO update drawable resource coordinates
-        else {
-            // initialize x
-            val x = when (detectedImage.drawablePosition) {
-                DRAWABLE_POSITION_GATE -> IMAGE_WIDTH / 5
-                else -> 0
-            }
-
-            // initialize y
-            val y = detectedImage.y + IMAGE_HEIGHT / 2
-
-            return Point(x, y)
-        }
-    }
-
-    private fun detectImage(): DetectedImage? {
+    private fun detectImage(): DetectedImage {
         // initialize screen bitmap
         var screenBitmap = ProjectionService.getScreenProjection()
         if (screenBitmap.width != width) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, width, height, true)
+
+        var maxSimilarity = 0.0
+        var indexOfMax = 0
+        var yOfMax = 0
 
         // move y
         var y = height - IMAGE_HEIGHT // start at bottom
@@ -87,14 +75,12 @@ class ImageController {
             val normalizedCroppedPixels = normalize(croppedPixels)
 
             // compute similarity
-            for (i in pixelsArray.indices) {
-                val similarity = computeSimilarity(pixelsArray[i], normalizedCroppedPixels)
-                if (similarity > SIMILARITY_THRESHOLD) {
-//                    // recycle bitmaps
-//                    screenBitmap.recycle()
-//                    croppedBitmap.recycle()
-//
-//                    return DetectedImage(y, i)
+            for (i in villagePixelsArray.indices) {
+                val similarity = computeSimilarity(villagePixelsArray[i], normalizedCroppedPixels)
+                if (similarity > maxSimilarity) {
+                    maxSimilarity = similarity
+                    indexOfMax = i
+                    yOfMax = y
                 }
             }
 
@@ -102,10 +88,21 @@ class ImageController {
             croppedBitmap.recycle()
 
             y -= IMAGE_STRIDE
-        } while (y >= 0)
+        } while (y >= height / 2)
 
-        // case not found
-        return null
+        // recycle bitmaps
+        screenBitmap.recycle()
+
+        // calculate duel button detect count
+        if (indexOfMax == DRAWABLE_POSITION_BUTTON_DUEL) {
+            GateMacro.duelButtonDetectCount++
+            if (GateMacro.duelButtonDetectCount == 2) {
+                GateMacro.isDuel = true
+                GateMacro.duelButtonDetectCount = 0
+            }
+        }
+
+        return DetectedImage(yOfMax, indexOfMax)
     }
 
     private fun normalize(pixelArray: IntArray?): DoubleArray {
@@ -128,6 +125,20 @@ class ImageController {
         }
 
         return dotProduct / (sqrt(sumA) * sqrt(sumB))
+    }
+
+    fun findCoordinate(): Point {
+        // initialize detected image
+        val detectedImage = detectImage()
+
+        // TODO update drawable resource coordinates
+        val x = when (detectedImage.drawablePosition) {
+            DRAWABLE_POSITION_BUTTON_GATE -> IMAGE_WIDTH / 5
+            DRAWABLE_POSITION_BUTTON_DUEL -> IMAGE_WIDTH / 2
+            else -> 0
+        }
+
+        return Point(x, detectedImage.y + IMAGE_HEIGHT / 2)
     }
 
 //    private fun saveImage(bitmap: Bitmap) {

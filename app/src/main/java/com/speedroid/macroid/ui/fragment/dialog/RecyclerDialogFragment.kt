@@ -111,10 +111,6 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
                         DIALOG_TYPE_MODE -> {
                             when (adapterPosition) {
                                 DIALOG_POSITION_GATE -> {
-                                    // stop handler
-                                    if (GateMacro.macroHandler != null)
-                                        GateMacro.macroHandler!!.removeMessages(0)
-
                                     // start handler
                                     GateMacro().startMacro()
                                 }

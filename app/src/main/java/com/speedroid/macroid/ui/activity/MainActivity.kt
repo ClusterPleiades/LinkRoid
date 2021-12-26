@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         else overlayButton.setText(R.string.button_overlay_start)
 
         // set warning visibility
-        if (DeviceController(this).getWidthMax() >= IMAGE_WIDTH) warningTextView.visibility = View.VISIBLE
+        if (DeviceController(this).getWidthMax() != IMAGE_WIDTH) warningTextView.visibility = View.VISIBLE
         else warningTextView.visibility = View.GONE
     }
 }
