@@ -13,6 +13,9 @@ class Configs {
         // notification
         const val NOTIFICATION_ID = 1000
 
+        // warning
+        const val SCREEN_WIDTH_STANDARD = 720
+
         // overlay service
         const val CLICK_TIME_THRESHOLD = 100
 
@@ -20,15 +23,17 @@ class Configs {
         const val PROJECTION_NAME = "projection"
 
         // macro
-        const val IMAGE_WIDTH = 720
-        const val IMAGE_HEIGHT = 40
-        const val IMAGE_STRIDE = 2
+        const val TOP_LEFT = 0
+        const val TOP_RIGHT = 1
+        const val BOTTOM_LEFT = 2
+        const val BOTTOM_RIGHT = 3
+
+        const val STRIDE = 1
+        const val SIMILARITY_THRESHOLD = 0.9
 
         const val DELAY_START = 500L
         const val DELAY_INTERVAL = 1000L
-
-        // village
-        const val DRAWABLE_POSITION_BUTTON_GATE = 0
-        const val DRAWABLE_POSITION_BUTTON_DUEL = 1
     }
+
+
 }

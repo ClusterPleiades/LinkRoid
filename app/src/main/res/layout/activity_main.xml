@@ -19,7 +19,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_marginBottom="@dimen/margin_large"
-            android:src="@drawable/image_overlay"
+            android:src="@drawable/icon_overlay"
             tools:ignore="ContentDescription" />
 
         <Button

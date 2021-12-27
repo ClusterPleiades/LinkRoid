@@ -1,22 +1,24 @@
 package com.speedroid.macroid.macro
 
-import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Handler
-import android.util.Log
-import com.speedroid.macroid.Configs.Companion.DELAY_INTERVAL
 import com.speedroid.macroid.Configs.Companion.DELAY_START
+import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.ImageController
-import com.speedroid.macroid.service.ClickService
+import com.speedroid.macroid.R
+import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.activity.SplashActivity.Companion.preservedContext
 
 class GateMacro {
     companion object {
         var macroHandler: Handler? = null
-        var duelButtonDetectCount = 0
-        var isDuel = false
     }
 
+    private val deviceController: DeviceController = DeviceController(preservedContext)
     private val imageController: ImageController = ImageController()
+
+    private val screenWidth = deviceController.getWidthMax()
+    private val screenHeight = deviceController.getHeightMax()
     private val runnable: Runnable
 
     init {
@@ -26,20 +28,29 @@ class GateMacro {
         // initialize runnable
         object : Runnable {
             override fun run() {
-                if (isDuel) {
+                // initialize screen bitmap
+                var screenBitmap = ProjectionService.getScreenProjection()
+                if (screenBitmap.width != screenWidth) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, screenWidth, screenHeight, true)
 
-                } else {
-                    val coordinate = imageController.findCoordinate()
-                    val intent = Intent(preservedContext, ClickService::class.java)
-                    intent.putExtra("x", coordinate.x)
-                    intent.putExtra("y", coordinate.y)
+                // detect
+                imageController.detect(screenBitmap, R.drawable.image_retry)
 
-                    // click
-                    preservedContext.startService(intent)
-                }
+
+
+
+                // recycle bitmaps
+                screenBitmap.recycle()
+
+//                val detectResult = imageController.detect()
+//                val intent = Intent(preservedContext, ClickService::class.java)
+//                intent.putExtra("x", detectResult.fromX)
+//                intent.putExtra("y", detectResult.fromY)
+//
+//                // click
+//                preservedContext.startService(intent)
 
                 // run again
-                macroHandler!!.postDelayed(this, DELAY_INTERVAL)
+//                macroHandler!!.postDelayed(this, DELAY_INTERVAL)
             }
         }.also { runnable = it }
     }
