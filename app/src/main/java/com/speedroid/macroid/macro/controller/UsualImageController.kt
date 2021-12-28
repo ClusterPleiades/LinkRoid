@@ -9,6 +9,7 @@ import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT
 import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
+import com.speedroid.macroid.macro.DetectResult
 import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.activity.SplashActivity.Companion.preservedContext
 import kotlin.math.abs
@@ -71,6 +72,14 @@ class UsualImageController {
 
         val returnDetectResult = if (centerDetectResult.distance < bottomDetectResult.distance) centerDetectResult else bottomDetectResult
         return if (returnDetectResult.distance > DISTANCE_THRESHOLD) null else returnDetectResult
+    }
+
+    fun detectRetryImage(): DetectResult {
+        // initialize screen bitmap
+        var screenBitmap = ProjectionService.getScreenProjection()
+        if (screenBitmap.width != screenWidth) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, screenWidth, screenHeight, true)
+
+        return detectCenterImage(screenBitmap)
     }
 
     private fun detectCenterImage(screenBitmap: Bitmap): DetectResult {
@@ -161,6 +170,4 @@ class UsualImageController {
 
         return distance / compareCount
     }
-
-    class DetectResult(var clickPoint: Point, var distance: Long, var isDuel: Boolean)
 }

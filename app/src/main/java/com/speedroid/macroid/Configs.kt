@@ -32,6 +32,11 @@ class Configs {
 
         const val DISTANCE_THRESHOLD = 3000000L
 
+        const val STATE_NON_DUEL = 0
+        const val STATE_DUEL_READY = 1
+        const val STATE_DUEL_STANDBY = 2 // count 2 from non duel
+        const val STATE_DUEL_START = 3
+
         // 1080 290
     }
 
