@@ -5,7 +5,7 @@ import android.os.Handler
 import android.util.Log
 import com.speedroid.macroid.Configs.Companion.DELAY_INTERVAL
 import com.speedroid.macroid.Configs.Companion.DELAY_START
-import com.speedroid.macroid.UsualImageController
+import com.speedroid.macroid.macro.controller.UsualImageController
 import com.speedroid.macroid.service.ClickService
 import com.speedroid.macroid.ui.activity.SplashActivity.Companion.preservedContext
 
@@ -27,8 +27,6 @@ class GateMacro {
             override fun run() {
 
                 if (duelButtonCount == 2) {
-                    // initialize duel button count
-                    duelButtonCount = 0
                     // TODO duel logic
                     Log.d("test", "duel")
                     return

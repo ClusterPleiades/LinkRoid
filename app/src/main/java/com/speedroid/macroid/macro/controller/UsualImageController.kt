@@ -1,4 +1,4 @@
-package com.speedroid.macroid
+package com.speedroid.macroid.macro.controller
 
 import android.graphics.Bitmap
 import android.graphics.Point
@@ -7,6 +7,8 @@ import androidx.core.content.ContextCompat
 import com.speedroid.macroid.Configs.Companion.DISTANCE_THRESHOLD
 import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT
 import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
+import com.speedroid.macroid.DeviceController
+import com.speedroid.macroid.R
 import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.activity.SplashActivity.Companion.preservedContext
 import kotlin.math.abs
@@ -138,7 +140,10 @@ class UsualImageController {
         }
 
         // initialize is duel
-        val isDuel = bottomDrawableResIdArray[indexOfMin] == R.drawable.image_duel
+        val isDuel = when (bottomDrawableResIdArray[indexOfMin]) {
+            R.drawable.image_duel, R.drawable.image_duel_2 -> true
+            else -> false
+        }
 
         return DetectResult(clickPoint, minDistance, isDuel)
     }
