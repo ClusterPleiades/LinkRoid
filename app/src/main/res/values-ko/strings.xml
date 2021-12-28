@@ -3,8 +3,9 @@
 
     <string name="dialog_cancel">취소</string>
     <string name="dialog_confirm">확인</string>
-    <string name="dialog_message_overlay">Macroid의 오버레이를 허용해 주세요.</string>
-    <string name="dialog_message_access">Macroid의 접근성 서비스를 허용해 주세요.</string>
+    <string name="dialog_message_overlay">Macroid의 오버레이를 허용해주세요.</string>
+    <string name="dialog_message_battery">Macroid의 배터리 사용량 제한을 없애주세요.</string>
+    <string name="dialog_message_access">Macroid의 접근성 서비스를 허용해주세요.</string>
 
     <string name="button_overlay_start">오버레이 네트워크를 구축!</string>
     <string name="button_overlay_stop">서비스 중지</string>

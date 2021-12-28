@@ -3,9 +3,12 @@ package com.speedroid.macroid.ui.activity
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.view.accessibility.AccessibilityManager
 import android.widget.Button
@@ -13,7 +16,10 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.speedroid.macroid.Configs
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_ACCESS
+import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_BATTERY
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_OVERLAY
 import com.speedroid.macroid.Configs.Companion.SCREEN_WIDTH_STANDARD
 import com.speedroid.macroid.DeviceController
@@ -86,6 +92,11 @@ class MainActivity : AppCompatActivity() {
             val defaultDialogFragment = DefaultDialogFragment(DIALOG_TYPE_OVERLAY)
             defaultDialogFragment.show(supportFragmentManager, DIALOG_TYPE_OVERLAY.toString())
         }
+        // check battery optimization
+        else if (!(getSystemService(POWER_SERVICE) as PowerManager).isIgnoringBatteryOptimizations(packageName)) {
+            val defaultDialogFragment = DefaultDialogFragment(DIALOG_TYPE_BATTERY)
+            defaultDialogFragment.show(supportFragmentManager, DIALOG_TYPE_BATTERY.toString())
+        }
         // check accessibility permission
         else {
             val accessibilityManager = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
@@ -93,7 +104,7 @@ class MainActivity : AppCompatActivity() {
 
             var accessible = false
             for (i in list.indices) {
-                if (list[i].resolveInfo.serviceInfo.packageName == application.packageName) {
+                if (list[i].resolveInfo.serviceInfo.packageName == packageName) {
                     accessible = true
                     break
                 }
