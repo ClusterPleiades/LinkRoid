@@ -50,20 +50,24 @@ class ProjectionService : Service() {
             return intent
         }
 
-        fun getScreenProjection(): Bitmap {
+        fun getScreenProjection(): Bitmap? {
             val image = imageReader!!.acquireLatestImage()
-            val planes = image.planes
-            val buffer = planes[0].buffer
+            if (image == null)
+                return null
+            else {
+                val planes = image.planes
+                val buffer = planes[0].buffer
 
-            val pixelStride = planes[0].pixelStride
-            val rowStride = planes[0].rowStride
-            val rowPadding: Int = rowStride - pixelStride * width
+                val pixelStride = planes[0].pixelStride
+                val rowStride = planes[0].rowStride
+                val rowPadding: Int = rowStride - pixelStride * width
 
-            val screenBitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888)
-            screenBitmap.copyPixelsFromBuffer(buffer)
+                val screenBitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888)
+                screenBitmap.copyPixelsFromBuffer(buffer)
 
-            image.close()
-            return screenBitmap
+                image.close()
+                return screenBitmap
+            }
         }
     }
 

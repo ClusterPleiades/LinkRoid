@@ -7,7 +7,6 @@ import kotlin.math.abs
 
 open class BaseImageController {
     private val deviceController: DeviceController = DeviceController(preservedContext)
-    open val screenWidth = deviceController.getWidthMax()
     open val screenHeight = deviceController.getHeightMax()
 
     fun computeDistanceAverage(drawablePixels: IntArray, screenPixels: IntArray): Long {

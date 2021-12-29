@@ -75,28 +75,24 @@ class GateImageController : BaseImageController() {
         winBitmap.recycle()
     }
 
-    fun detectImage(): DetectResult? {
+    fun detectImage(screenBitmap:Bitmap): DetectResult? {
         // detect center image
-        var detectResult = detectCenterImage()
+        var detectResult = detectCenterImage(screenBitmap)
 
         // detect exception image
-        val exceptionDetectResult = detectExceptionImage()
+        val exceptionDetectResult = detectExceptionImage(screenBitmap)
         if (exceptionDetectResult.distance < detectResult.distance)
             detectResult = exceptionDetectResult
 
         // detect bottom image
-        val bottomDetectResult = detectBottomImage()
+        val bottomDetectResult = detectBottomImage(screenBitmap)
         if (bottomDetectResult.distance < detectResult.distance)
             detectResult = bottomDetectResult
 
         return if (detectResult.distance > THRESHOLD_DISTANCE) null else detectResult
     }
 
-    fun detectWinImage(): DetectResult? {
-        // initialize screen bitmap
-        var screenBitmap = ProjectionService.getScreenProjection()
-        if (screenBitmap.width != screenWidth) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, screenWidth, screenHeight, true)
-
+    fun detectWinImage(screenBitmap:Bitmap): DetectResult? {
         // initialize y
         val y = screenHeight - IMAGE_HEIGHT
 
@@ -104,13 +100,10 @@ class GateImageController : BaseImageController() {
         val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT)
         val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT)
         croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
+        croppedBitmap.recycle()
 
         // detect
         val distance = computeDistanceAverage(winDrawablePixels, croppedPixels)
-
-        // recycle bitmaps
-        croppedBitmap.recycle()
-        screenBitmap.recycle()
 
         // check threshold
         if (distance > THRESHOLD_DISTANCE)
@@ -122,11 +115,7 @@ class GateImageController : BaseImageController() {
         return DetectResult(R.drawable.image_button_confirm, clickPoint, distance)
     }
 
-    fun detectCenterImage(): DetectResult {
-        // initialize screen bitmap
-        var screenBitmap = ProjectionService.getScreenProjection()
-        if (screenBitmap.width != screenWidth) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, screenWidth, screenHeight, true)
-
+    fun detectCenterImage(screenBitmap:Bitmap): DetectResult {
         // initialize y
         val y: Int = (screenHeight - IMAGE_HEIGHT) / 2
 
@@ -134,6 +123,7 @@ class GateImageController : BaseImageController() {
         val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT)
         val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT)
         croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
+        croppedBitmap.recycle()
 
         // detect
         var minDistance = Long.MAX_VALUE
@@ -146,10 +136,6 @@ class GateImageController : BaseImageController() {
             }
         }
 
-        // recycle bitmaps
-        croppedBitmap.recycle()
-        screenBitmap.recycle()
-
         // TODO update
         // initialize click point
         val clickPoint = when (centerDrawableResIdArray[indexOfMin]) {
@@ -160,11 +146,7 @@ class GateImageController : BaseImageController() {
         return DetectResult(centerDrawableResIdArray[indexOfMin], clickPoint, minDistance)
     }
 
-    private fun detectExceptionImage(): DetectResult {
-        // initialize screen bitmap
-        var screenBitmap = ProjectionService.getScreenProjection()
-        if (screenBitmap.width != screenWidth) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, screenWidth, screenHeight, true)
-
+    private fun detectExceptionImage(screenBitmap:Bitmap): DetectResult {
         // initialize y
         val y: Int = (screenHeight - IMAGE_HEIGHT_EXCEPTION) / 2
 
@@ -172,6 +154,7 @@ class GateImageController : BaseImageController() {
         val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT_EXCEPTION)
         val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_EXCEPTION)
         croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_EXCEPTION)
+        croppedBitmap.recycle()
 
         // detect
         var minDistance = Long.MAX_VALUE
@@ -184,10 +167,6 @@ class GateImageController : BaseImageController() {
             }
         }
 
-        // recycle bitmaps
-        croppedBitmap.recycle()
-        screenBitmap.recycle()
-
         // TODO update
         // initialize click point
         val clickPoint = when (exceptionDrawableResIdArray[indexOfMin]) {
@@ -198,11 +177,7 @@ class GateImageController : BaseImageController() {
         return DetectResult(exceptionDrawableResIdArray[indexOfMin], clickPoint, minDistance)
     }
 
-    private fun detectBottomImage(): DetectResult {
-        // initialize screen bitmap
-        var screenBitmap = ProjectionService.getScreenProjection()
-        if (screenBitmap.width != screenWidth) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, screenWidth, screenHeight, true)
-
+    private fun detectBottomImage(screenBitmap:Bitmap): DetectResult {
         // initialize y
         val y = screenHeight - IMAGE_HEIGHT
 
@@ -210,6 +185,7 @@ class GateImageController : BaseImageController() {
         val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT)
         val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT)
         croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
+        croppedBitmap.recycle()
 
         // detect
         var minDistance = Long.MAX_VALUE
@@ -221,10 +197,6 @@ class GateImageController : BaseImageController() {
                 indexOfMin = i
             }
         }
-
-        // recycle bitmaps
-        croppedBitmap.recycle()
-        screenBitmap.recycle()
 
         // TODO update
         // initialize click point

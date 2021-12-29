@@ -1,6 +1,7 @@
 package com.speedroid.macroid.macro
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.Handler
 import android.os.Looper
@@ -33,6 +34,7 @@ import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.controller.GateImageController
 import com.speedroid.macroid.service.GestureService
+import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 
 class GateMacro {
@@ -40,7 +42,9 @@ class GateMacro {
         var macroHandler: Handler? = null
     }
 
-    private val screenHeight = DeviceController(preservedContext).getHeightMax()
+    private val deviceController: DeviceController = DeviceController(preservedContext)
+    private val screenWidth = deviceController.getWidthMax()
+    private val screenHeight = deviceController.getHeightMax()
     private val gateImageController: GateImageController = GateImageController()
     private val duelRunnableArrayList: ArrayList<Runnable>
     private val mainRunnable: Runnable
@@ -52,7 +56,7 @@ class GateMacro {
 
     init {
         // initialize handler
-        macroHandler = Handler(Looper.myLooper()!!)
+        macroHandler = Handler(preservedContext.mainLooper)
 
         // initialize duel runnable array
         duelRunnableArrayList = ArrayList()
@@ -60,96 +64,111 @@ class GateMacro {
         // initialize main runnable
         object : Runnable {
             override fun run() {
-                when (state) {
-                    STATE_GATE_USUAL, STATE_GATE_READY -> {
-                        Log.d("test", "STATE USUAL/READY")
-                        // detect image
-                        val detectResult = gateImageController.detectImage()
-                        if (detectResult != null) {
-                            // change state
-                            if (detectResult.drawableResId == R.drawable.image_button_duel_1 ||
-                                detectResult.drawableResId == R.drawable.image_button_duel_2 ||
-                                detectResult.drawableResId == R.drawable.image_button_back
-                            ) state++
+                // initialize screen bitmap
+                val screenBitmap = ProjectionService.getScreenProjection()
+                if (screenBitmap == null)
+                    macroHandler!!.postDelayed(this, DELAY_DEFAULT)
+                else {
+                    // initialize scaled bitmap
+                    val scaledBitmap = if (screenBitmap.width != screenWidth) Bitmap.createScaledBitmap(screenBitmap, screenWidth, screenHeight, true) else screenBitmap
 
-                            // click
-                            click(detectResult.clickPoint)
-                        }
+                    // recycle origin screen bitmap
+                    screenBitmap.recycle()
 
-                        // record time
-                        if (state == STATE_DUEL_STANDBY)
-                            time = SystemClock.elapsedRealtime()
-
-                        // repeat
-                        macroHandler!!.postDelayed(this, DELAY_MID)
-                    }
-                    STATE_DUEL_STANDBY -> {
-                        Log.d("test", "STATE STANDBY")
-                        // detect image
-                        val detectResult = gateImageController.detectCenterImage()
-
-                        // case retry
-                        if (detectResult.distance < THRESHOLD_DISTANCE) {
-                            // reset time
-                            time = SystemClock.elapsedRealtime()
-                        }
-
-                        // click
-                        click(detectResult.clickPoint)
-
-                        // check time
-                        if (SystemClock.elapsedRealtime() - time > THRESHOLD_TIME_STANDBY) {
-                            // change state
-                            state = STATE_DUEL_START
-                        }
-
-                        // initialize turn
-                        turn = 0
-
-                        // repeat
+                    if (scaledBitmap == null)
                         macroHandler!!.postDelayed(this, DELAY_DEFAULT)
-                    }
-                    STATE_DUEL_START -> {
-                        Log.d("test", "STATE START")
-                        // detect image
-                        val detectResult = gateImageController.detectWinImage()
-                        if (detectResult == null) {
-                            // count turn
-                            turn++
+                    else {
+                        when (state) {
+                            STATE_GATE_USUAL, STATE_GATE_READY -> {
+                                // detect image
+                                val detectResult = gateImageController.detectImage(scaledBitmap)
+                                if (detectResult != null) {
+                                    // change state
+                                    if (detectResult.drawableResId == R.drawable.image_button_duel_1 ||
+                                        detectResult.drawableResId == R.drawable.image_button_duel_2 ||
+                                        detectResult.drawableResId == R.drawable.image_button_back
+                                    ) state++
 
-                            // run duel runnable
-                            macroHandler!!.post(duelRunnableArrayList[0])
-                        } else {
-                            // click
-                            click(detectResult.clickPoint)
+                                    // click
+                                    click(detectResult.clickPoint)
+                                }
 
-                            // backup win click point
-                            backupClickPoint = detectResult.clickPoint
+                                // record time
+                                if (state == STATE_DUEL_STANDBY)
+                                    time = SystemClock.elapsedRealtime()
 
-                            // change state
-                            state = STATE_DUEL_END
+                                // repeat
+                                macroHandler!!.postDelayed(this, DELAY_MID)
+                            }
+                            STATE_DUEL_STANDBY -> {
+                                // detect image
+                                val detectResult = gateImageController.detectCenterImage(scaledBitmap)
 
-                            // repeat
-                            macroHandler!!.postDelayed(this, DELAY_DEFAULT)
+                                // case retry
+                                if (detectResult.distance < THRESHOLD_DISTANCE) {
+                                    // reset time
+                                    time = SystemClock.elapsedRealtime()
+                                }
+
+                                // click
+                                click(detectResult.clickPoint)
+
+                                // check time
+                                if (SystemClock.elapsedRealtime() - time > THRESHOLD_TIME_STANDBY) {
+                                    // change state
+                                    state = STATE_DUEL_START
+                                }
+
+                                // initialize turn
+                                turn = 0
+
+                                // repeat
+                                macroHandler!!.postDelayed(this, DELAY_DEFAULT)
+                            }
+                            STATE_DUEL_START -> {
+                                // detect image
+                                val detectResult = gateImageController.detectWinImage(scaledBitmap)
+                                if (detectResult == null) {
+                                    // count turn
+                                    turn++
+
+                                    // run duel runnable
+                                    macroHandler!!.post(duelRunnableArrayList[0])
+                                } else {
+                                    // click
+                                    click(detectResult.clickPoint)
+
+                                    // backup win click point
+                                    backupClickPoint = detectResult.clickPoint
+
+                                    // change state
+                                    state = STATE_DUEL_END
+
+                                    // repeat
+                                    macroHandler!!.postDelayed(this, DELAY_DEFAULT)
+                                }
+                            }
+                            STATE_DUEL_END -> {
+                                // detect image
+                                val detectResult = gateImageController.detectImage(scaledBitmap)
+                                if (detectResult != null && detectResult.drawableResId == R.drawable.image_background_dialog) {
+                                    // click
+                                    click(detectResult.clickPoint)
+
+                                    // change state
+                                    state = STATE_GATE_USUAL
+                                } else {
+                                    // click
+                                    click(backupClickPoint)
+                                }
+
+                                // repeat
+                                macroHandler!!.postDelayed(this, DELAY_DEFAULT)
+                            }
                         }
-                    }
-                    STATE_DUEL_END -> {
-                        Log.d("test", "STATE END")
-                        // detect image
-                        val detectResult = gateImageController.detectImage()
-                        if (detectResult != null && detectResult.drawableResId == R.drawable.image_background_dialog) {
-                            // click
-                            click(detectResult.clickPoint)
 
-                            // change state
-                            state = STATE_GATE_USUAL
-                        } else {
-                            // click
-                            click(backupClickPoint)
-                        }
-
-                        // repeat
-                        macroHandler!!.postDelayed(this, DELAY_DEFAULT)
+                        // recycle screen bitmap
+                        scaledBitmap.recycle()
                     }
                 }
             }
