@@ -3,14 +3,14 @@ package com.speedroid.macroid.macro
 import android.content.Intent
 import android.graphics.Point
 import android.os.Handler
-import com.speedroid.macroid.Configs.Companion.DELAY_INTERVAL
+import com.speedroid.macroid.Configs.Companion.DELAY_USUAL
 import com.speedroid.macroid.Configs.Companion.DELAY_START
 import com.speedroid.macroid.Configs.Companion.STATE_DUEL_READY
 import com.speedroid.macroid.Configs.Companion.STATE_DUEL_STANDBY
 import com.speedroid.macroid.Configs.Companion.STATE_DUEL_START
-import com.speedroid.macroid.Configs.Companion.STATE_NON_DUEL
-import com.speedroid.macroid.macro.controller.DuelImageController
-import com.speedroid.macroid.macro.controller.UsualImageController
+import com.speedroid.macroid.Configs.Companion.STATE_USUAL_GATE
+import com.speedroid.macroid.macro.controller.DuelBaseImageController
+import com.speedroid.macroid.macro.controller.UsualBaseImageController
 import com.speedroid.macroid.service.ClickService
 import com.speedroid.macroid.ui.activity.SplashActivity.Companion.preservedContext
 
@@ -19,10 +19,10 @@ class GateMacro {
         var macroHandler: Handler? = null
     }
 
-    private val usualImageController: UsualImageController = UsualImageController()
-    private val duelImageController: DuelImageController = DuelImageController()
+    private val usualImageController: UsualBaseImageController = UsualBaseImageController()
+    private val duelImageController: DuelBaseImageController = DuelBaseImageController()
     private val runnable: Runnable
-    private var state = STATE_NON_DUEL
+    private var state = STATE_USUAL_GATE
 
     init {
         // initialize handler
@@ -31,11 +31,8 @@ class GateMacro {
         // initialize runnable
         object : Runnable {
             override fun run() {
-                // initialize delay
-                var delay = DELAY_INTERVAL
-
                 when (state) {
-                    STATE_NON_DUEL, STATE_DUEL_READY -> {
+                    STATE_USUAL_GATE, STATE_DUEL_READY -> {
                         // detect image
                         val detectResult = usualImageController.detectImage()
                         if (detectResult != null) {
@@ -47,40 +44,42 @@ class GateMacro {
                         }
 
                         // repeat
-                        macroHandler!!.postDelayed(this, delay)
+                        macroHandler!!.postDelayed(this, DELAY_USUAL)
                     }
                     STATE_DUEL_STANDBY -> {
                         // detect mat
-                        val detectResult = duelImageController.detectMat()
-                        if (detectResult == null) {
+                        val distance = duelImageController.detectMat()
+                        if (distance == null) {
                             // click retry location
-                            click(usualImageController.detectRetryImage().clickPoint)
+                            val detectResult = usualImageController.detectRetryImage()
+                            if (detectResult != null)
+                                click(detectResult.clickPoint)
                         }
                         // change state
                         else state++
 
-                        // repeat
-                        macroHandler!!.postDelayed(this, delay)
+//                        // repeat
+//                        macroHandler!!.postDelayed(this, delay)
                     }
                     STATE_DUEL_START -> {
-                        // detect draw
-                        var detectResult = duelImageController.detectDraw()
-                        if (detectResult == null) {
-                            // detect confirm
-                            detectResult = duelImageController.detectConfirm()
-                            if (detectResult != null) {
-                                // change state
-                                state = STATE_NON_DUEL
-
-                                // click
-                                click(detectResult.clickPoint)
-                            }
-
-                            // repeat
-                            macroHandler!!.postDelayed(this, delay)
-                        } else {
-                            // TODO duel ~ endphase -> state = DUEL_START
-                        }
+//                        // detect draw
+//                        var detectResult = duelImageController.detectDraw()
+//                        if (detectResult == null) {
+//                            // detect confirm
+//                            detectResult = duelImageController.detectConfirm()
+//                            if (detectResult != null) {
+//                                // change state
+//                                state = STATE_NON_DUEL
+//
+//                                // click
+//                                click(detectResult.clickPoint)
+//                            }
+//
+//                            // repeat
+//                            macroHandler!!.postDelayed(this, delay)
+//                        } else {
+//                            // TODO duel ~ endphase -> state = DUEL_START
+//                        }
                     }
                 }
             }

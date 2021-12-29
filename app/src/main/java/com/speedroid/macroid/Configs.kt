@@ -28,11 +28,11 @@ class Configs {
         const val IMAGE_HEIGHT = 290
 
         const val DELAY_START = 500L
-        const val DELAY_INTERVAL = 500L
+        const val DELAY_USUAL = 500L
 
         const val DISTANCE_THRESHOLD = 3000000L
 
-        const val STATE_NON_DUEL = 0
+        const val STATE_USUAL_GATE = 0
         const val STATE_DUEL_READY = 1
         const val STATE_DUEL_STANDBY = 2 // count 2 from non duel
         const val STATE_DUEL_START = 3

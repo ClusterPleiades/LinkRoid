@@ -4,21 +4,15 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.content.ContextCompat
-import com.speedroid.macroid.Configs
-import com.speedroid.macroid.DeviceController
+import com.speedroid.macroid.Configs.Companion.DISTANCE_THRESHOLD
+import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT
+import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
 import com.speedroid.macroid.R
-import com.speedroid.macroid.macro.DetectResult
+import com.speedroid.macroid.macro.result.UsualDetectResult
 import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.activity.SplashActivity.Companion.preservedContext
-import kotlin.math.abs
 
-class DuelImageController {
-//    val statusBarResId = preservedContext.resources.getIdentifier("status_bar_height", "dimen", "android")
-//    val statusBarHeight = preservedContext.resources.getDimensionPixelSize(statusBarResId)
-    private val deviceController: DeviceController = DeviceController(preservedContext)
-    private val screenWidth = deviceController.getWidthMax()
-    private val screenHeight = deviceController.getHeightMax()
-
+class UsualBaseImageController : BaseImageController() {
     // TODO update
     private val centerDrawableResIdArray = arrayOf(
         R.drawable.image_retry
@@ -32,7 +26,6 @@ class DuelImageController {
 
     private val bottomDrawablePixelsArray: Array<IntArray?> = arrayOfNulls(bottomDrawableResIdArray.size)
     private val centerDrawablePixelsArray: Array<IntArray?> = arrayOfNulls(centerDrawableResIdArray.size)
-    private val matDrawablePixelsArray = ContextCompat.getDrawable()
 
     init {
         // initialize bitmap array
@@ -46,18 +39,18 @@ class DuelImageController {
         // initialize pixels array
         var pixels: IntArray
         for (i in centerDrawablePixelsArray.indices) {
-            pixels = IntArray(Configs.IMAGE_WIDTH * Configs.IMAGE_HEIGHT)
-            centerBitmapArray[i].getPixels(pixels, 0, Configs.IMAGE_WIDTH, 0, 0, Configs.IMAGE_WIDTH, Configs.IMAGE_HEIGHT)
+            pixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT)
+            centerBitmapArray[i].getPixels(pixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
             centerDrawablePixelsArray[i] = pixels
         }
         for (i in bottomDrawablePixelsArray.indices) {
-            pixels = IntArray(Configs.IMAGE_WIDTH * Configs.IMAGE_HEIGHT)
-            bottomBitmapArray[i].getPixels(pixels, 0, Configs.IMAGE_WIDTH, 0, 0, Configs.IMAGE_WIDTH, Configs.IMAGE_HEIGHT)
+            pixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT)
+            bottomBitmapArray[i].getPixels(pixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
             bottomDrawablePixelsArray[i] = pixels
         }
     }
 
-    fun detectImage(): DetectResult? {
+    fun detectImage(): UsualDetectResult? {
         // initialize screen bitmap
         var screenBitmap = ProjectionService.getScreenProjection()
         if (screenBitmap.width != screenWidth) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, screenWidth, screenHeight, true)
@@ -72,17 +65,31 @@ class DuelImageController {
         screenBitmap.recycle()
 
         val returnDetectResult = if (centerDetectResult.distance < bottomDetectResult.distance) centerDetectResult else bottomDetectResult
-        return if (returnDetectResult.distance > Configs.DISTANCE_THRESHOLD) null else returnDetectResult
+        return if (returnDetectResult.distance > DISTANCE_THRESHOLD) null else returnDetectResult
     }
 
-    private fun detectCenterImage(screenBitmap: Bitmap): DetectResult {
+    fun detectRetryImage(): UsualDetectResult? {
+        // initialize screen bitmap
+        var screenBitmap = ProjectionService.getScreenProjection()
+        if (screenBitmap.width != screenWidth) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, screenWidth, screenHeight, true)
+
+        // detect
+        val detectResult = detectCenterImage(screenBitmap)
+
+        // recycle bitmap
+        screenBitmap.recycle()
+
+        return if (detectResult.distance > DISTANCE_THRESHOLD) null else detectResult
+    }
+
+    private fun detectCenterImage(screenBitmap: Bitmap): UsualDetectResult {
         // initialize y
-        val y: Int = (screenHeight - Configs.IMAGE_HEIGHT) / 2
+        val y: Int = (screenHeight - IMAGE_HEIGHT) / 2
 
         // initialize cropped pixel
-        val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, Configs.IMAGE_WIDTH, Configs.IMAGE_HEIGHT)
-        val croppedPixels = IntArray(Configs.IMAGE_WIDTH * Configs.IMAGE_HEIGHT)
-        croppedBitmap.getPixels(croppedPixels, 0, Configs.IMAGE_WIDTH, 0, 0, Configs.IMAGE_WIDTH, Configs.IMAGE_HEIGHT)
+        val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT)
+        val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT)
+        croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
 
         // detect
         var minDistance = Long.MAX_VALUE
@@ -95,27 +102,27 @@ class DuelImageController {
             }
         }
 
-        // recycler bitmap
+        // recycle bitmap
         croppedBitmap.recycle()
 
         // TODO update
         // initialize click point
         val clickPoint = when (centerDrawableResIdArray[indexOfMin]) {
-            R.drawable.image_retry -> Point(1080 * 3 / 4, Configs.IMAGE_HEIGHT * 9 / 10 + y)
+            R.drawable.image_retry -> Point(1080 * 3 / 4, IMAGE_HEIGHT * 9 / 10 + y)
             else -> Point(-1, -1)
         }
 
-        return DetectResult(clickPoint, minDistance, false)
+        return UsualDetectResult(clickPoint, minDistance, false)
     }
 
-    private fun detectBottomImage(screenBitmap: Bitmap): DetectResult {
+    private fun detectBottomImage(screenBitmap: Bitmap): UsualDetectResult {
         // initialize y
-        val y = screenHeight - Configs.IMAGE_HEIGHT
+        val y = screenHeight - IMAGE_HEIGHT
 
         // initialize cropped pixel
-        val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, Configs.IMAGE_WIDTH, Configs.IMAGE_HEIGHT)
-        val croppedPixels = IntArray(Configs.IMAGE_WIDTH * Configs.IMAGE_HEIGHT)
-        croppedBitmap.getPixels(croppedPixels, 0, Configs.IMAGE_WIDTH, 0, 0, Configs.IMAGE_WIDTH, Configs.IMAGE_HEIGHT)
+        val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT)
+        val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT)
+        croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
 
         // detect
         var minDistance = Long.MAX_VALUE
@@ -128,16 +135,16 @@ class DuelImageController {
             }
         }
 
-        // recycler bitmap
+        // recycle bitmap
         croppedBitmap.recycle()
 
         // TODO update
         // initialize click point
         val clickPoint = when (bottomDrawableResIdArray[indexOfMin]) {
-            R.drawable.image_gate -> Point(1080 / 16 * 3, Configs.IMAGE_HEIGHT * 3 / 4 + y)
+            R.drawable.image_gate -> Point(1080 / 16 * 3, IMAGE_HEIGHT * 3 / 4 + y)
             R.drawable.image_duel,
             R.drawable.image_duel_2,
-            R.drawable.image_dialog -> Point(1080 / 2, Configs.IMAGE_HEIGHT / 8 + y)
+            R.drawable.image_dialog -> Point(1080 / 2, IMAGE_HEIGHT / 8 + y)
             else -> Point(-1, -1)
         }
 
@@ -147,20 +154,6 @@ class DuelImageController {
             else -> false
         }
 
-        return DetectResult(clickPoint, minDistance, isDuel)
-    }
-
-    private fun computeDistanceAverage(drawablePixels: IntArray, screenPixels: IntArray): Long {
-        var distance = 0L
-        var compareCount = 0
-
-        for (i in drawablePixels.indices) {
-            if (drawablePixels[i] == 0)
-                continue
-            distance += abs(drawablePixels[i] - screenPixels[i])
-            compareCount++
-        }
-
-        return distance / compareCount
+        return UsualDetectResult(clickPoint, minDistance, isDuel)
     }
 }
