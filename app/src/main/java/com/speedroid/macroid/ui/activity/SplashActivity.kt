@@ -8,16 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
-    companion object {
-        @SuppressLint("StaticFieldLeak")
-        lateinit var preservedContext: Context
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // initialize application context
-        preservedContext = applicationContext
 
         // start activity
         intent = Intent(this, MainActivity::class.java)

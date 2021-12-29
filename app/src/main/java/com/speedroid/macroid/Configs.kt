@@ -27,17 +27,37 @@ class Configs {
         const val IMAGE_WIDTH = 1080
         const val IMAGE_HEIGHT = 290
 
-        const val DELAY_START = 500L
-        const val DELAY_USUAL = 500L
+        const val DELAY_DEFAULT = 500L
+        const val DELAY_LONG = 2000L
+        const val DELAY_VERY_LONG = 2500L
+        const val DELAY_ENEMY = 10000L
 
-        const val DISTANCE_THRESHOLD = 3000000L
+        const val THRESHOLD_DISTANCE = 4000000L
+        const val THRESHOLD_TIME_DRAW = 2000L
+        const val THRESHOLD_TIME_STANDBY = 18000L
 
-        const val STATE_USUAL_GATE = 0
-        const val STATE_DUEL_READY = 1
+        const val DURATION_DRAG = 300L
+        const val DURATION_CLICK = 100L
+
+        const val STATE_GATE_USUAL = 0
+        const val STATE_GATE_READY = 1
         const val STATE_DUEL_STANDBY = 2 // count 2 from non duel
         const val STATE_DUEL_START = 3
+        const val STATE_DUEL_END = 4
+
+        const val LENGTH_DRAG = 800
+        const val X_CENTER = 540
+        const val X_SUMMON = 400
+        const val X_PHASE = 1030
+        const val X_MONSTER_LEFT = 295
+        const val X_MONSTER_RIGHT = 785
+        const val Y_FROM_BOTTOM_HAND = 100
+        const val Y_FROM_BOTTOM_SUMMON = 500
+        const val Y_FROM_BOTTOM_PHASE = 700
+        const val Y_FROM_BOTTOM_MONSTER = 1020
 
         // 1080 290
+        // 1025
     }
 
 

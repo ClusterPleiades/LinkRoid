@@ -25,7 +25,7 @@ import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.GateMacro
 import com.speedroid.macroid.service.OverlayService
 import com.speedroid.macroid.service.ProjectionService
-import com.speedroid.macroid.ui.activity.SplashActivity.Companion.preservedContext
+import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 import java.util.*
 
 class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.DialogFragment() {

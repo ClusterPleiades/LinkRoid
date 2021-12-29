@@ -13,5 +13,5 @@
     <string name="text_warning_width">Macroid는 가로 720픽셀에 최적화되어있습니다.\n해상도를 낮춰 주세요.</string>
 
     <!-- service -->
-    <string name="accessibility_service_description">click service</string>
+    <string name="accessibility_service_description">Gesture Service</string>
 </resources>

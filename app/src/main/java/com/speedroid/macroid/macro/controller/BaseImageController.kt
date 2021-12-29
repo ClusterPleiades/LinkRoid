@@ -1,11 +1,12 @@
 package com.speedroid.macroid.macro.controller
 
 import com.speedroid.macroid.DeviceController
+import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 import com.speedroid.macroid.ui.activity.SplashActivity
 import kotlin.math.abs
 
 open class BaseImageController {
-    private val deviceController: DeviceController = DeviceController(SplashActivity.preservedContext)
+    private val deviceController: DeviceController = DeviceController(preservedContext)
     open val screenWidth = deviceController.getWidthMax()
     open val screenHeight = deviceController.getHeightMax()
 

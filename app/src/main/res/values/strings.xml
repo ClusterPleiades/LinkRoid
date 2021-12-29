@@ -13,5 +13,5 @@
     <string name="text_warning_width">Macroid is optimized for 720 pixels width.\nlower the resolution.</string>
 
     <!-- service -->
-    <string name="accessibility_service_description">click service</string>
+    <string name="accessibility_service_description">Gesture Service</string>
 </resources>
