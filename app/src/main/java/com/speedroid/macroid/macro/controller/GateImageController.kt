@@ -6,6 +6,7 @@ import android.graphics.drawable.BitmapDrawable
 import androidx.core.content.ContextCompat
 import com.speedroid.macroid.Configs.Companion.THRESHOLD_DISTANCE
 import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT
+import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT_EXCEPTION
 import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
 import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.result.DetectResult
@@ -15,19 +16,23 @@ import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 class GateImageController : BaseImageController() {
     // TODO update
     private val centerDrawableResIdArray = arrayOf(
-        R.drawable.image_button_retry,
+        R.drawable.image_button_retry
+    )
+    private val exceptionDrawableResIdArray = arrayOf(
+        R.drawable.image_button_appear
     )
     private val bottomDrawableResIdArray = arrayOf(
         R.drawable.image_button_gate,
-        R.drawable.image_button_back,
         R.drawable.image_button_duel_1,
         R.drawable.image_button_duel_2,
+        R.drawable.image_button_back,
         R.drawable.image_background_dialog,
         R.drawable.image_button_confirm,
         R.drawable.image_button_next
     )
 
     private val bottomDrawablePixelsArray: Array<IntArray?> = arrayOfNulls(bottomDrawableResIdArray.size)
+    private val exceptionDrawablePixelsArray: Array<IntArray?> = arrayOfNulls(exceptionDrawableResIdArray.size)
     private val centerDrawablePixelsArray: Array<IntArray?> = arrayOfNulls(centerDrawableResIdArray.size)
     private val winDrawablePixels: IntArray = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT)
 
@@ -35,6 +40,9 @@ class GateImageController : BaseImageController() {
         // initialize bitmap
         val centerBitmapArray: Array<Bitmap> = Array(centerDrawableResIdArray.size) { i ->
             (ContextCompat.getDrawable(preservedContext, centerDrawableResIdArray[i]) as BitmapDrawable).bitmap
+        }
+        val exceptionBitmapArray: Array<Bitmap> = Array(exceptionDrawableResIdArray.size) { i ->
+            (ContextCompat.getDrawable(preservedContext, exceptionDrawableResIdArray[i]) as BitmapDrawable).bitmap
         }
         val bottomBitmapArray: Array<Bitmap> = Array(bottomDrawableResIdArray.size) { i ->
             (ContextCompat.getDrawable(preservedContext, bottomDrawableResIdArray[i]) as BitmapDrawable).bitmap
@@ -48,6 +56,11 @@ class GateImageController : BaseImageController() {
             centerBitmapArray[i].getPixels(pixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
             centerDrawablePixelsArray[i] = pixels
         }
+        for (i in exceptionDrawablePixelsArray.indices) {
+            pixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_EXCEPTION)
+            exceptionBitmapArray[i].getPixels(pixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_EXCEPTION)
+            exceptionDrawablePixelsArray[i] = pixels
+        }
         for (i in bottomDrawablePixelsArray.indices) {
             pixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT)
             bottomBitmapArray[i].getPixels(pixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
@@ -57,16 +70,25 @@ class GateImageController : BaseImageController() {
 
         // recycle bitmap array
         for (i in centerBitmapArray.indices) centerBitmapArray[i].recycle()
+        for (i in exceptionBitmapArray.indices) exceptionBitmapArray[i].recycle()
         for (i in bottomBitmapArray.indices) bottomBitmapArray[i].recycle()
         winBitmap.recycle()
     }
 
     fun detectImage(): DetectResult? {
-        // detect image
-        val centerDetectResult = detectCenterImage()
-        val bottomDetectResult = detectBottomImage()
+        // detect center image
+        var detectResult = detectCenterImage()
 
-        val detectResult = if (centerDetectResult.distance < bottomDetectResult.distance) centerDetectResult else bottomDetectResult
+        // detect exception image
+        val exceptionDetectResult = detectExceptionImage()
+        if (exceptionDetectResult.distance < detectResult.distance)
+            detectResult = exceptionDetectResult
+
+        // detect bottom image
+        val bottomDetectResult = detectBottomImage()
+        if (bottomDetectResult.distance < detectResult.distance)
+            detectResult = bottomDetectResult
+
         return if (detectResult.distance > THRESHOLD_DISTANCE) null else detectResult
     }
 
@@ -95,7 +117,7 @@ class GateImageController : BaseImageController() {
             return null
 
         // initialize click point
-        val clickPoint = Point(1080 / 2, y + IMAGE_HEIGHT / 2 + IMAGE_HEIGHT * 2 / 5)
+        val clickPoint = Point(1080 / 2, y + IMAGE_HEIGHT * 3 / 5)
 
         return DetectResult(R.drawable.image_button_confirm, clickPoint, distance)
     }
@@ -138,6 +160,44 @@ class GateImageController : BaseImageController() {
         return DetectResult(centerDrawableResIdArray[indexOfMin], clickPoint, minDistance)
     }
 
+    private fun detectExceptionImage(): DetectResult {
+        // initialize screen bitmap
+        var screenBitmap = ProjectionService.getScreenProjection()
+        if (screenBitmap.width != screenWidth) screenBitmap = Bitmap.createScaledBitmap(screenBitmap, screenWidth, screenHeight, true)
+
+        // initialize y
+        val y: Int = (screenHeight - IMAGE_HEIGHT_EXCEPTION) / 2
+
+        // initialize cropped pixel
+        val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT_EXCEPTION)
+        val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_EXCEPTION)
+        croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_EXCEPTION)
+
+        // detect
+        var minDistance = Long.MAX_VALUE
+        var indexOfMin = 0
+        for (i in exceptionDrawablePixelsArray.indices) {
+            val distance = computeDistanceAverage(exceptionDrawablePixelsArray[i]!!, croppedPixels)
+            if (distance < minDistance) {
+                minDistance = distance
+                indexOfMin = i
+            }
+        }
+
+        // recycle bitmaps
+        croppedBitmap.recycle()
+        screenBitmap.recycle()
+
+        // TODO update
+        // initialize click point
+        val clickPoint = when (exceptionDrawableResIdArray[indexOfMin]) {
+            R.drawable.image_button_appear -> Point(1080 / 4, IMAGE_HEIGHT_EXCEPTION * 9 / 10 + y)
+            else -> null
+        }
+
+        return DetectResult(exceptionDrawableResIdArray[indexOfMin], clickPoint, minDistance)
+    }
+
     private fun detectBottomImage(): DetectResult {
         // initialize screen bitmap
         var screenBitmap = ProjectionService.getScreenProjection()
@@ -174,6 +234,8 @@ class GateImageController : BaseImageController() {
             R.drawable.image_button_duel_1,
             R.drawable.image_button_duel_2,
             R.drawable.image_background_dialog -> Point(1080 / 2, IMAGE_HEIGHT / 8 + y)
+            R.drawable.image_button_confirm,
+            R.drawable.image_button_next -> Point(1080 / 2, y + IMAGE_HEIGHT * 3 / 5)
             else -> null
         }
 

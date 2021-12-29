@@ -26,8 +26,6 @@ class GestureService : AccessibilityService() {
         path.moveTo(x1, y1)
         if (isDrag)
             path.lineTo(x1, y1 - LENGTH_DRAG)
-        else
-            path.lineTo(x1, y1)
 
         // initialize builder
         val gestureDescriptionBuilder = GestureDescription.Builder()
