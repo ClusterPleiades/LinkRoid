@@ -9,7 +9,6 @@ import com.speedroid.macroid.Configs.Companion.DELAY_DEFAULT
 import com.speedroid.macroid.Configs.Companion.DELAY_ENEMY
 import com.speedroid.macroid.Configs.Companion.DELAY_LONG
 import com.speedroid.macroid.Configs.Companion.DELAY_VERY_LONG
-import com.speedroid.macroid.Configs.Companion.DELAY_WIN
 import com.speedroid.macroid.Configs.Companion.DURATION_DRAG
 import com.speedroid.macroid.Configs.Companion.STATE_DUEL_END
 import com.speedroid.macroid.Configs.Companion.STATE_DUEL_STANDBY
@@ -84,6 +83,7 @@ class GateMacro {
                                     if (detectResult != null) {
                                         // click
                                         click(detectResult.clickPoint)
+                                        backupClickPoint = detectResult.clickPoint
 
                                         // change state
                                         if (detectResult.drawableResId == R.drawable.image_button_back) {
@@ -100,6 +100,8 @@ class GateMacro {
                                     if (SystemClock.elapsedRealtime() - time > THRESHOLD_TIME_STANDBY) {
                                         state = STATE_DUEL_START
                                         turn = 0
+                                    } else {
+                                        click(backupClickPoint)
                                     }
 
                                     // repeat
@@ -109,11 +111,16 @@ class GateMacro {
                                     // detect win
                                     detectResult = gateImageController.detectWinImage(scaledBitmap)
                                     if (detectResult == null) {
-                                        // count turn
-                                        turn++
+                                        if (turn == 3) {
+                                            // repeat
+                                            macroHandler!!.postDelayed(this, DELAY_DEFAULT)
+                                        } else {
+                                            // count turn
+                                            turn++
 
-                                        // run duel
-                                        macroHandler!!.post(duelRunnableArrayList[0])
+                                            // run duel
+                                            macroHandler!!.post(duelRunnableArrayList[0])
+                                        }
                                     } else {
                                         // click
                                         click(detectResult.clickPoint)
@@ -128,7 +135,7 @@ class GateMacro {
                                 }
                                 STATE_DUEL_END -> {
                                     // detect image
-                                    detectResult = gateImageController.detectImage(scaledBitmap)
+                                    detectResult = gateImageController.detectBottomImage(scaledBitmap)
                                     if (detectResult == null) {
                                         // click
                                         click(backupClickPoint)
@@ -225,7 +232,7 @@ class GateMacro {
             click(Point(X_PHASE, screenHeight - Y_FROM_BOTTOM_PHASE))
 
             if (turn >= 3)
-                macroHandler!!.postDelayed(mainRunnable, DELAY_WIN)
+                macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
             else
                 macroHandler!!.postDelayed(mainRunnable, DELAY_ENEMY)
         }.also { duelRunnableArrayList.add(it) }
