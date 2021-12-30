@@ -5,8 +5,8 @@ import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.content.ContextCompat
 import com.speedroid.macroid.Configs.Companion.THRESHOLD_DISTANCE
-import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT
-import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT_LARGE
+import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT_SMALL
+import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT_HUGE
 import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
 import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.DetectResult
@@ -38,13 +38,13 @@ class GateImageController : BaseImageController() {
         // initialize pixels
         var pixels: IntArray
         for (i in bottomDrawablePixelsArray.indices) {
-            pixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT)
-            bottomBitmapArray[i].getPixels(pixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
+            pixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
+            bottomBitmapArray[i].getPixels(pixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
             bottomDrawablePixelsArray[i] = pixels
         }
         for (i in exceptionDrawablePixelsArray.indices) {
-            pixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_LARGE)
-            exceptionBitmapArray[i].getPixels(pixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_LARGE)
+            pixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_HUGE)
+            exceptionBitmapArray[i].getPixels(pixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_HUGE)
             exceptionDrawablePixelsArray[i] = pixels
         }
 
@@ -63,12 +63,12 @@ class GateImageController : BaseImageController() {
 
     fun detectBottomImage(screenBitmap: Bitmap): DetectResult? {
         // initialize y
-        val y = screenHeight - IMAGE_HEIGHT
+        val y = screenHeight - IMAGE_HEIGHT_SMALL
 
         // initialize cropped pixel
-        val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT)
-        val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT)
-        croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
+        val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
+        val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
+        croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
         croppedBitmap.recycle()
 
         // detect
@@ -89,9 +89,9 @@ class GateImageController : BaseImageController() {
         // TODO update
         // initialize click point
         val clickPoint = when (bottomDrawableResIdArray[indexOfMin]) {
-            R.drawable.image_button_gate -> Point(1080 / 16 * 3, IMAGE_HEIGHT * 3 / 4 + y)
+            R.drawable.image_button_gate -> Point(1080 / 16 * 3, IMAGE_HEIGHT_SMALL * 3 / 4 + y)
             R.drawable.image_button_back,
-            R.drawable.image_background_dialog -> Point(1080 / 2, IMAGE_HEIGHT / 8 + y)
+            R.drawable.image_background_dialog -> Point(1080 / 2, IMAGE_HEIGHT_SMALL / 8 + y)
             else -> null
         }
 
@@ -100,12 +100,12 @@ class GateImageController : BaseImageController() {
 
     private fun detectExceptionImage(screenBitmap: Bitmap): DetectResult? {
         // initialize y
-        val y: Int = (screenHeight - IMAGE_HEIGHT_LARGE) / 2
+        val y: Int = (screenHeight - IMAGE_HEIGHT_HUGE) / 2
 
         // initialize cropped pixel
-        val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT_LARGE)
-        val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_LARGE)
-        croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_LARGE)
+        val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT_HUGE)
+        val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_HUGE)
+        croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_HUGE)
         croppedBitmap.recycle()
 
         // detect
@@ -126,7 +126,7 @@ class GateImageController : BaseImageController() {
         // TODO update
         // initialize click point
         val clickPoint = when (exceptionDrawableResIdArray[indexOfMin]) {
-            R.drawable.image_button_appear -> Point(1080 / 4, IMAGE_HEIGHT_LARGE * 9 / 10 + y)
+            R.drawable.image_button_appear -> Point(1080 / 4, IMAGE_HEIGHT_HUGE * 9 / 10 + y)
             else -> null
         }
 

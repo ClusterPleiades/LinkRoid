@@ -65,7 +65,6 @@ class GateMode : BaseMode() {
                                     if (detectResult != null) {
                                         // click
                                         click(detectResult.clickPoint)
-                                        backupClickPoint = detectResult.clickPoint
 
                                         // change state
                                         if (detectResult.drawableResId == R.drawable.image_button_back) {
@@ -83,7 +82,7 @@ class GateMode : BaseMode() {
                                         state = STATE_DUEL_START
                                         turn = 0
                                     } else {
-                                        click(backupClickPoint)
+                                        click(Point(X_SUMMON, screenHeight - Y_FROM_BOTTOM_SUMMON))
                                     }
 
                                     // repeat

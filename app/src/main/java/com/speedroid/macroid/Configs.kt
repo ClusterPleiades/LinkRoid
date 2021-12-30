@@ -25,19 +25,20 @@ class Configs {
 
         // macro
         const val IMAGE_WIDTH = 1080
-        const val IMAGE_HEIGHT = 290
-        const val IMAGE_HEIGHT_LARGE = 800
+        const val IMAGE_HEIGHT_SMALL = 290
+        const val IMAGE_HEIGHT_LARGE = 500
+        const val IMAGE_HEIGHT_HUGE = 800
 
         const val DELAY_DEFAULT = 500L
         const val DELAY_LONG = 2000L
         const val DELAY_VERY_LONG = 2500L
-        const val DELAY_ENEMY = 5000L
+        const val DELAY_ENEMY = 6000L
 
         const val THRESHOLD_DISTANCE = 3000000L
         const val THRESHOLD_TIME_DRAW = 2000L
-        const val THRESHOLD_TIME_STANDBY = 18000L
+        const val THRESHOLD_TIME_STANDBY = 20000L
 
-        const val DURATION_DRAG = 300L
+        const val DURATION_DRAG = 250L
         const val DURATION_CLICK = 100L
 
         const val STATE_GATE_USUAL = 0
@@ -46,7 +47,7 @@ class Configs {
         const val STATE_DUEL_START = 3
         const val STATE_DUEL_END = 4
 
-        const val LENGTH_DRAG = 800
+        const val LENGTH_DRAG = 600
         const val X_CENTER = 540
         const val X_SUMMON = 400
         const val X_PHASE = 1030
