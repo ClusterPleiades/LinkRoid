@@ -1,16 +1,15 @@
-package com.speedroid.macroid.macro.controller
+package com.speedroid.macroid.macro.image
 
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.content.ContextCompat
-import com.speedroid.macroid.Configs
 import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT
 import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
 import com.speedroid.macroid.Configs.Companion.THRESHOLD_DISTANCE
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
-import com.speedroid.macroid.macro.result.DetectResult
+import com.speedroid.macroid.macro.DetectResult
 import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 import kotlin.math.abs
 

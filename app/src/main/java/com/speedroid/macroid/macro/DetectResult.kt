@@ -1,4 +1,4 @@
-package com.speedroid.macroid.macro.result
+package com.speedroid.macroid.macro
 
 import android.graphics.Point
 

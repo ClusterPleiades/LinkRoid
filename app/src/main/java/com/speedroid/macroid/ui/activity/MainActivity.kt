@@ -3,12 +3,10 @@ package com.speedroid.macroid.ui.activity
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.BitmapDrawable
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import android.view.accessibility.AccessibilityManager
 import android.widget.Button
@@ -16,15 +14,14 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import com.speedroid.macroid.Configs
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_ACCESS
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_BATTERY
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_OVERLAY
 import com.speedroid.macroid.Configs.Companion.SCREEN_WIDTH_STANDARD
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
-import com.speedroid.macroid.macro.GateMacro
+import com.speedroid.macroid.macro.mode.BaseMode
+import com.speedroid.macroid.macro.mode.GateMode
 import com.speedroid.macroid.service.OverlayService
 import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.fragment.dialog.DefaultDialogFragment
@@ -72,8 +69,8 @@ class MainActivity : AppCompatActivity() {
                 startService(ProjectionService.getStopIntent(this))
 
                 // stop handler
-                if (GateMacro.macroHandler != null)
-                    GateMacro.macroHandler!!.removeMessages(0)
+                if (BaseMode.macroHandler != null)
+                    BaseMode.macroHandler!!.removeMessages(0)
 
                 // set overlay button text
                 overlayButton.setText(R.string.button_overlay_start)

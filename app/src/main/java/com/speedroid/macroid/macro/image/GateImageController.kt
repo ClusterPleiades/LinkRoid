@@ -1,4 +1,4 @@
-package com.speedroid.macroid.macro.controller
+package com.speedroid.macroid.macro.image
 
 import android.graphics.Bitmap
 import android.graphics.Point
@@ -9,7 +9,7 @@ import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT
 import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT_LARGE
 import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
 import com.speedroid.macroid.R
-import com.speedroid.macroid.macro.result.DetectResult
+import com.speedroid.macroid.macro.DetectResult
 import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 
 class GateImageController : BaseImageController() {

@@ -22,7 +22,8 @@ import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_STOP
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_MODE
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
-import com.speedroid.macroid.macro.GateMacro
+import com.speedroid.macroid.macro.mode.BaseMode
+import com.speedroid.macroid.macro.mode.GateMode
 import com.speedroid.macroid.service.OverlayService
 import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
@@ -112,7 +113,7 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
                             when (adapterPosition) {
                                 DIALOG_POSITION_GATE -> {
                                     // start handler
-                                    GateMacro().startMacro()
+                                    GateMode().startMacro()
                                 }
                                 DIALOG_POSITION_STOP -> {
                                     // stop overlay service
@@ -122,8 +123,8 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
                                     preservedContext.startService(ProjectionService.getStopIntent(preservedContext))
 
                                     // stop handler
-                                    if (GateMacro.macroHandler != null)
-                                        GateMacro.macroHandler!!.removeMessages(0)
+                                    if (BaseMode.macroHandler != null)
+                                        BaseMode.macroHandler!!.removeMessages(0)
                                 }
                             }
                         }

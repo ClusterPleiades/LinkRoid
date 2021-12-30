@@ -1,9 +1,7 @@
-package com.speedroid.macroid.macro
+package com.speedroid.macroid.macro.mode
 
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Point
-import android.os.Handler
 import android.os.SystemClock
 import com.speedroid.macroid.Configs.Companion.DELAY_DEFAULT
 import com.speedroid.macroid.Configs.Companion.DELAY_ENEMY
@@ -25,23 +23,13 @@ import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_HAND
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_MONSTER
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_PHASE
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_SUMMON
-import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
-import com.speedroid.macroid.macro.controller.GateImageController
-import com.speedroid.macroid.service.GestureService
+import com.speedroid.macroid.macro.image.GateImageController
 import com.speedroid.macroid.service.ProjectionService
-import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 
-class GateMacro {
-    companion object {
-        var macroHandler: Handler? = null
-    }
-
-    private val deviceController: DeviceController = DeviceController(preservedContext)
-    private val screenWidth = deviceController.getWidthMax()
-    private val screenHeight = deviceController.getHeightMax()
+class GateMode : BaseMode() {
     private val gateImageController: GateImageController = GateImageController()
-    private val duelRunnableArrayList: ArrayList<Runnable>
+    private val duelRunnableArrayList: ArrayList<Runnable> = ArrayList()
     private val mainRunnable: Runnable
 
     private var state = STATE_GATE_USUAL
@@ -50,12 +38,6 @@ class GateMacro {
     private var backupClickPoint: Point? = null
 
     init {
-        // initialize handler
-        macroHandler = Handler(preservedContext.mainLooper)
-
-        // initialize duel runnable array
-        duelRunnableArrayList = ArrayList()
-
         // initialize main runnable
         object : Runnable {
             override fun run() {
@@ -240,23 +222,5 @@ class GateMacro {
 
     fun startMacro() {
         macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
-    }
-
-    private fun click(point: Point?) {
-        if (point == null)
-            return
-
-        val intent = Intent(preservedContext, GestureService::class.java)
-        intent.putExtra("x1", point.x)
-        intent.putExtra("y1", point.y)
-        preservedContext.startService(intent)
-    }
-
-    private fun drag(startPoint: Point) {
-        val intent = Intent(preservedContext, GestureService::class.java)
-        intent.putExtra("x1", startPoint.x)
-        intent.putExtra("y1", startPoint.y)
-        intent.putExtra("isDrag", true)
-        preservedContext.startService(intent)
     }
 }

@@ -13,7 +13,8 @@ import com.speedroid.macroid.Configs.Companion.NOTIFICATION_ID
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.NotificationController
 import com.speedroid.macroid.R
-import com.speedroid.macroid.macro.GateMacro
+import com.speedroid.macroid.macro.mode.BaseMode
+import com.speedroid.macroid.macro.mode.GateMode
 import com.speedroid.macroid.ui.activity.ModeActivity
 
 class OverlayService : Service() {
@@ -90,8 +91,8 @@ class OverlayService : Service() {
                 isClickable = false
 
                 // stop handler
-                if (GateMacro.macroHandler != null)
-                    GateMacro.macroHandler!!.removeMessages(0)
+                if (BaseMode.macroHandler != null)
+                    BaseMode.macroHandler!!.removeMessages(0)
 
                 // start mode dialog as activity
                 val intent = Intent(this, ModeActivity::class.java)
