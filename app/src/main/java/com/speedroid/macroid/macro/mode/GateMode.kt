@@ -28,6 +28,8 @@ import com.speedroid.macroid.macro.image.GateImageController
 import com.speedroid.macroid.service.ProjectionService
 
 class GateMode : BaseMode() {
+    private val enemyDelay = prefs.getLong(DELAY_ENEMY, 8000)
+
     private val gateImageController: GateImageController = GateImageController()
     private val duelRunnableArrayList: ArrayList<Runnable> = ArrayList()
     private val mainRunnable: Runnable
@@ -65,6 +67,7 @@ class GateMode : BaseMode() {
                                     if (detectResult != null) {
                                         // click
                                         click(detectResult.clickPoint)
+                                        backupClickPoint = detectResult.clickPoint
 
                                         // change state
                                         if (detectResult.drawableResId == R.drawable.image_button_back) {
@@ -78,11 +81,11 @@ class GateMode : BaseMode() {
                                 }
                                 STATE_DUEL_STANDBY -> {
                                     // change state
-                                    if (SystemClock.elapsedRealtime() - time > THRESHOLD_TIME_STANDBY) {
+                                    if (SystemClock.elapsedRealtime() - time > THRESHOLD_TIME_STANDBY + enemyDelay) {
                                         state = STATE_DUEL_START
                                         turn = 0
                                     } else {
-                                        click(Point(X_SUMMON, screenHeight - Y_FROM_BOTTOM_SUMMON))
+                                        click(backupClickPoint)
                                     }
 
                                     // repeat
@@ -215,7 +218,7 @@ class GateMode : BaseMode() {
             if (turn >= 3)
                 macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
             else
-                macroHandler!!.postDelayed(mainRunnable, prefs.getLong(DELAY_ENEMY, 8000))
+                macroHandler!!.postDelayed(mainRunnable, enemyDelay)
         }.also { duelRunnableArrayList.add(it) }
     }
 
