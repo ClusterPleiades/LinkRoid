@@ -4,4 +4,8 @@
         <item>Gate</item>
         <item>Stop Service</item>
     </string-array>
+
+    <string-array name="array_title_setting">
+        <item>Waiting Time for Opponent\'s Turn</item>
+    </string-array>
 </resources>

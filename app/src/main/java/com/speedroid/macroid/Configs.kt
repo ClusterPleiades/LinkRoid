@@ -11,6 +11,9 @@ class Configs {
         const val DIALOG_POSITION_GATE = 0
         const val DIALOG_POSITION_STOP = 1
 
+        // setting
+        const val SETTING_POSITION_TIME_OPPONENT = 0
+
         // notification
         const val NOTIFICATION_ID = 1000
 
@@ -23,6 +26,10 @@ class Configs {
         // projection service
         const val PROJECTION_NAME = "projection"
 
+        // prefs
+        const val PREFS = "prefs"
+        const val DELAY_ENEMY = "delay_enemy" // 6000 8000 10000
+
         // macro
         const val IMAGE_WIDTH = 1080
         const val IMAGE_HEIGHT_SMALL = 290
@@ -32,7 +39,6 @@ class Configs {
         const val DELAY_DEFAULT = 500L
         const val DELAY_LONG = 2000L
         const val DELAY_VERY_LONG = 2500L
-        const val DELAY_ENEMY = 6000L
 
         const val THRESHOLD_DISTANCE = 3000000L
         const val THRESHOLD_TIME_DRAW = 2000L

@@ -35,9 +35,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_large"
-        android:text="@string/text_warning_width"
         android:lineSpacingMultiplier="1.2"
+        android:text="@string/text_warning_width"
         android:textAlignment="center"
         android:textColor="@color/color_red"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/layout_main" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        android:layout_marginStart="@dimen/margin_default"
+        android:layout_marginEnd="@dimen/margin_default"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:background="@drawable/drawable_round_stroke"
+        android:paddingTop="@dimen/margin_small"
+        android:paddingBottom="@dimen/margin_default"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

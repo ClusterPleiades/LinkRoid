@@ -4,4 +4,8 @@
         <item>게이트</item>
         <item>서비스 중지</item>
     </string-array>
+
+    <string-array name="array_title_setting">
+        <item>상대 턴 대기시간</item>
+    </string-array>
 </resources>

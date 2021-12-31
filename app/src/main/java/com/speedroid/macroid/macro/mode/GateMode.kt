@@ -215,7 +215,7 @@ class GateMode : BaseMode() {
             if (turn >= 3)
                 macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
             else
-                macroHandler!!.postDelayed(mainRunnable, DELAY_ENEMY)
+                macroHandler!!.postDelayed(mainRunnable, prefs.getLong(DELAY_ENEMY, 8000))
         }.also { duelRunnableArrayList.add(it) }
     }
 

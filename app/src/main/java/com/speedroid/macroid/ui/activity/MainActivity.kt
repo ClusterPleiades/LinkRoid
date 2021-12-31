@@ -1,23 +1,38 @@
 package com.speedroid.macroid.ui.activity
 
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.graphics.Color
 import android.media.projection.MediaProjectionManager
+import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.accessibility.AccessibilityManager
 import android.widget.Button
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat.canScrollVertically
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.speedroid.macroid.Configs.Companion.DELAY_ENEMY
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_ACCESS
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_BATTERY
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_OVERLAY
+import com.speedroid.macroid.Configs.Companion.PREFS
 import com.speedroid.macroid.Configs.Companion.SCREEN_WIDTH_STANDARD
+import com.speedroid.macroid.Configs.Companion.SETTING_POSITION_TIME_OPPONENT
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.mode.BaseMode
@@ -25,6 +40,7 @@ import com.speedroid.macroid.macro.mode.GateMode
 import com.speedroid.macroid.service.OverlayService
 import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.fragment.dialog.DefaultDialogFragment
+import com.speedroid.macroid.ui.fragment.dialog.RecyclerDialogFragment
 
 
 class MainActivity : AppCompatActivity() {
@@ -35,6 +51,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // set navigation color
+        window.navigationBarColor = Color.WHITE
 
         // initialize result launcher
         resultLauncher = registerForActivityResult(StartActivityForResult()) { result ->
@@ -79,6 +98,12 @@ class MainActivity : AppCompatActivity() {
 
         // initialize warning textview
         warningTextView = findViewById(R.id.text_warning)
+
+        // initialize setting recycler view
+        val settingRecyclerView: RecyclerView = findViewById(R.id.recycler_setting)
+        settingRecyclerView.setHasFixedSize(true)
+        settingRecyclerView.layoutManager = CustomLinearLayoutManager(this)
+        settingRecyclerView.adapter = SettingRecyclerAdapter()
     }
 
     override fun onResume() {
@@ -121,4 +146,61 @@ class MainActivity : AppCompatActivity() {
         if (DeviceController(this).getWidthMax() != SCREEN_WIDTH_STANDARD) warningTextView.visibility = View.VISIBLE
         else warningTextView.visibility = View.GONE
     }
+
+    inner class CustomLinearLayoutManager(var context: Context) : LinearLayoutManager(context) {
+        override fun canScrollVertically(): Boolean {
+            return false
+        }
+    }
+
+    inner class SettingRecyclerAdapter : RecyclerView.Adapter<SettingRecyclerAdapter.SettingViewHolder>() {
+        private val prefs = getSharedPreferences(PREFS, MODE_PRIVATE)
+        private val editor = prefs.edit()
+        private val titleArray: Array<String> = resources.getStringArray(R.array.array_title_setting)
+
+        inner class SettingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            var titleTextView: TextView = itemView.findViewById(R.id.title_setting)
+            var contentsTextView: TextView = itemView.findViewById(R.id.contents_setting)
+            var seekBar: SeekBar = itemView.findViewById(R.id.seek_setting)
+        }
+
+        override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): SettingViewHolder {
+            val view: View = LayoutInflater.from(viewGroup.context).inflate(R.layout.layout_recycler_setting, viewGroup, false)
+            return SettingViewHolder(view)
+        }
+
+        @SuppressLint("SetTextI18n")
+        override fun onBindViewHolder(holder: SettingViewHolder, position: Int) {
+            // title
+            holder.titleTextView.text = titleArray[position]
+
+            when (position) {
+                SETTING_POSITION_TIME_OPPONENT -> {
+                    // contents
+                    var currentDelay = prefs.getLong(DELAY_ENEMY, 8000)
+                    holder.contentsTextView.text = "$currentDelay ms"
+
+                    // seek bar
+                    holder.seekBar.max = 2 // 0 1 2
+                    holder.seekBar.progress = ((currentDelay - 6000) / 2000).toInt()
+                    holder.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+                        override fun onStopTrackingTouch(seekBar: SeekBar) {}
+                        override fun onStartTrackingTouch(seekBar: SeekBar) {}
+                        override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                            editor.putLong(DELAY_ENEMY, 6000L + progress * 2000L)
+                            editor.apply()
+
+                            currentDelay = prefs.getLong(DELAY_ENEMY, 6000)
+                            holder.contentsTextView.text = "$currentDelay ms"
+                        }
+                    })
+                }
+            }
+        }
+
+        override fun getItemCount(): Int {
+            return titleArray.size
+        }
+    }
+
 }

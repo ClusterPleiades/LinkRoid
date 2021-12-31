@@ -6,6 +6,7 @@
         <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.24322916666666666" />
         <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/drawable/drawable_gem.xml" value="0.415625" />
         <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/drawable/drawable_gem_oval.xml" value="0.415625" />
+        <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/drawable/drawable_progress.xml" value="0.40923076923076923" />
         <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/drawable/drawable_round.xml" value="0.415625" />
         <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/drawable/drawable_round_ripple.xml" value="0.415625" />
         <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/drawable/drawable_round_stroke.xml" value="0.415625" />
@@ -21,6 +22,7 @@
         <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/layout/layout_overlay_recycler.xml" value="0.39947916666666666" />
         <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/layout/layout_recycler_dialog.xml" value="0.39947916666666666" />
         <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/layout/layout_recycler_overlay.xml" value="0.39947916666666666" />
+        <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/layout/layout_recycler_setting.xml" value="0.264" />
         <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/layout/layout_temp.xml" value="0.39947916666666666" />
         <entry key="..\:/Users/speed/Primary/GitHub/Macroid/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.415625" />
       </map>

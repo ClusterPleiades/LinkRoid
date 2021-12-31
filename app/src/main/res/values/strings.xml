@@ -10,7 +10,7 @@
     <string name="button_overlay_start">Build an Overlay Network!</string>
     <string name="button_overlay_stop">Stop Service</string>
 
-    <string name="text_warning_width">Macroid is optimized for 720 pixels width.\nlower the resolution.</string>
+    <string name="text_warning_width">Macroid is optimized for 1080 pixels width.\nlower the resolution.</string>
 
     <!-- service -->
     <string name="accessibility_service_description">Gesture Service</string>

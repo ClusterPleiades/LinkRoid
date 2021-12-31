@@ -3,6 +3,8 @@ package com.speedroid.macroid.macro.mode
 import android.content.Intent
 import android.graphics.Point
 import android.os.Handler
+import androidx.appcompat.app.AppCompatActivity
+import com.speedroid.macroid.Configs
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.service.GestureService
 import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
@@ -13,6 +15,7 @@ open class BaseMode {
     }
 
     private val deviceController: DeviceController = DeviceController(preservedContext)
+    open val prefs = preservedContext.getSharedPreferences(Configs.PREFS, AppCompatActivity.MODE_PRIVATE)
     open val screenWidth = deviceController.getWidthMax()
     open val screenHeight = deviceController.getHeightMax()
 
