@@ -42,7 +42,7 @@ class Configs {
 
         const val THRESHOLD_DISTANCE = 3000000L
         const val THRESHOLD_TIME_DRAW = 2000L
-        const val THRESHOLD_TIME_STANDBY = 20000L
+        const val THRESHOLD_TIME_STANDBY = 14000L
 
         const val DURATION_DRAG = 250L
         const val DURATION_CLICK = 100L
