@@ -56,7 +56,9 @@ class Configs {
 
         const val STATE_DICE_USUAL = 0
         const val STATE_DICE_READY = 1
-        const val STATE_DICE_END = 2
+        const val STATE_DICE_STANDBY = 2
+        const val STATE_DICE_DUEL = 3
+        const val STATE_DICE_END = 4
 
         const val LENGTH_DRAG = 600
         const val X_CENTER = 540

@@ -16,17 +16,34 @@ import kotlin.math.abs
 
 open class BaseImageController {
     private val deviceController: DeviceController = DeviceController(preservedContext)
-    open val screenHeight = deviceController.getHeightMax()
+    val screenHeight = deviceController.getHeightMax()
 
-    private val winDrawablePixels: IntArray = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
-    private val smallRetryDrawablePixels: IntArray = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
-    private val largeRetryDrawablePixels: IntArray = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_LARGE)
+    private val winDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
+    val backDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
+    val convDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
+
+    val gateDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
+
+    private val smallRetryDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
+    private val largeRetryDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_LARGE)
 
     init {
         // initialize drawable pixels
         val winBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_win) as BitmapDrawable).bitmap
         winBitmap.getPixels(winDrawablePixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
         winBitmap.recycle()
+
+        val backBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_back) as BitmapDrawable).bitmap
+        backBitmap.getPixels(backDrawablePixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
+        backBitmap.recycle()
+
+        val convBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_background_conv) as BitmapDrawable).bitmap
+        convBitmap.getPixels(convDrawablePixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
+        convBitmap.recycle()
+
+        val gateBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_gate) as BitmapDrawable).bitmap
+        gateBitmap.getPixels(gateDrawablePixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
+        gateBitmap.recycle()
 
         val smallRetryBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_retry_s) as BitmapDrawable).bitmap
         smallRetryBitmap.getPixels(smallRetryDrawablePixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
@@ -72,6 +89,46 @@ open class BaseImageController {
         val clickPoint = Point(1080 / 2, y + IMAGE_HEIGHT_SMALL * 3 / 5)
 
         return DetectResult(R.drawable.image_button_win, clickPoint, distance)
+    }
+
+    fun detectBackImage(screenBitmap: Bitmap): DetectResult? {
+        // initialize y
+        val y = screenHeight - IMAGE_HEIGHT_SMALL
+
+        // initialize cropped pixel
+        val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
+        val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
+        croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
+        croppedBitmap.recycle()
+
+        // detect
+        val distance = computeDistanceAverage(backDrawablePixels, croppedPixels)
+
+        // check threshold
+        if (distance > THRESHOLD_DISTANCE)
+            return null
+
+        return DetectResult(R.drawable.image_button_back, null, distance)
+    }
+
+    fun detectConvImage(screenBitmap: Bitmap): DetectResult? {
+        // initialize y
+        val y = screenHeight - IMAGE_HEIGHT_SMALL
+
+        // initialize cropped pixel
+        val croppedBitmap = Bitmap.createBitmap(screenBitmap, 0, y, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
+        val croppedPixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
+        croppedBitmap.getPixels(croppedPixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
+        croppedBitmap.recycle()
+
+        // detect
+        val distance = computeDistanceAverage(convDrawablePixels, croppedPixels)
+
+        // check threshold
+        if (distance > THRESHOLD_DISTANCE)
+            return null
+
+        return DetectResult(R.drawable.image_background_conv, null, distance)
     }
 
     fun detectRetryImage(screenBitmap: Bitmap): DetectResult? {

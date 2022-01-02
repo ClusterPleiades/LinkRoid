@@ -22,25 +22,17 @@ class GateImageController : BaseImageController() {
         R.drawable.image_button_appear
     )
 
-    private val bottomDrawablePixelsArray: Array<IntArray?> = arrayOfNulls(bottomDrawableResIdArray.size)
+    private val bottomDrawablePixelsArray: Array<IntArray?> = arrayOf(gateDrawablePixels, convDrawablePixels, backDrawablePixels)
     private val exceptionDrawablePixelsArray: Array<IntArray?> = arrayOfNulls(exceptionDrawableResIdArray.size)
 
     init {
         // initialize bitmap
-        val bottomBitmapArray: Array<Bitmap> = Array(bottomDrawableResIdArray.size) { i ->
-            (ContextCompat.getDrawable(preservedContext, bottomDrawableResIdArray[i]) as BitmapDrawable).bitmap
-        }
         val exceptionBitmapArray: Array<Bitmap> = Array(exceptionDrawableResIdArray.size) { i ->
             (ContextCompat.getDrawable(preservedContext, exceptionDrawableResIdArray[i]) as BitmapDrawable).bitmap
         }
 
         // initialize pixels
         var pixels: IntArray
-        for (i in bottomDrawablePixelsArray.indices) {
-            pixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
-            bottomBitmapArray[i].getPixels(pixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
-            bottomDrawablePixelsArray[i] = pixels
-        }
         for (i in exceptionDrawablePixelsArray.indices) {
             pixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_HUGE)
             exceptionBitmapArray[i].getPixels(pixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_HUGE)
@@ -48,7 +40,6 @@ class GateImageController : BaseImageController() {
         }
 
         // recycle bitmap array
-        for (i in bottomBitmapArray.indices) bottomBitmapArray[i].recycle()
         for (i in exceptionBitmapArray.indices) exceptionBitmapArray[i].recycle()
     }
 

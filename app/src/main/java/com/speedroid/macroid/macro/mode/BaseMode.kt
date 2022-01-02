@@ -16,9 +16,9 @@ abstract class BaseMode {
     }
 
     private val deviceController: DeviceController = DeviceController(preservedContext)
-    open val prefs: SharedPreferences = preservedContext.getSharedPreferences(Configs.PREFS, AppCompatActivity.MODE_PRIVATE)
-    open val screenWidth = deviceController.getWidthMax()
-    open val screenHeight = deviceController.getHeightMax()
+    val prefs: SharedPreferences = preservedContext.getSharedPreferences(Configs.PREFS, AppCompatActivity.MODE_PRIVATE)
+    val screenWidth = deviceController.getWidthMax()
+    val screenHeight = deviceController.getHeightMax()
 
     open lateinit var mainRunnable: Runnable
 
