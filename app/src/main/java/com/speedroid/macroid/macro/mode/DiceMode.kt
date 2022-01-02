@@ -48,7 +48,6 @@ class DiceMode : BaseMode() {
                         if (detectResult == null) {
                             when (state) {
                                 STATE_DICE_USUAL -> {
-                                    Log.d("test", "usual")
                                     // detect conversation
                                     detectResult = diceImageController.detectConvImage(scaledBitmap)
                                     if (detectResult == null) {
@@ -60,12 +59,12 @@ class DiceMode : BaseMode() {
                                         if (SystemClock.elapsedRealtime() - time > DELAY_SPONGEBOB) {
                                             click(detectResult.clickPoint)
                                             state = STATE_DICE_READY
-                                        } else
+                                        } else {
                                             click(dicePoint)
+                                        }
                                     }
                                 }
                                 STATE_DICE_READY -> {
-                                    Log.d("test", "ready")
                                     // detect back
                                     detectResult = diceImageController.detectBackImage(scaledBitmap)
                                     if (detectResult == null) {
@@ -76,7 +75,6 @@ class DiceMode : BaseMode() {
                                     } else state = STATE_DICE_STANDBY
                                 }
                                 STATE_DICE_STANDBY -> {
-                                    Log.d("test", "standby")
                                     // detect back
                                     detectResult = diceImageController.detectBackImage(scaledBitmap)
                                     if (detectResult != null) {
@@ -86,7 +84,6 @@ class DiceMode : BaseMode() {
                                     }
                                 }
                                 STATE_DICE_DUEL -> {
-                                    Log.d("test", "duel")
                                     if (SystemClock.elapsedRealtime() - time > THRESHOLD_TIME_STANDBY) {
                                         // detect win
                                         detectResult = diceImageController.detectWinImage(scaledBitmap)
@@ -100,13 +97,12 @@ class DiceMode : BaseMode() {
                                     } else click(autoPoint)
                                 }
                                 STATE_DICE_END -> {
-                                    Log.d("test", "end")
                                     // detect conversation
                                     detectResult = diceImageController.detectConvImage(scaledBitmap)
                                     click(backupClickPoint)
                                     if (detectResult != null) {
                                         state = STATE_DICE_USUAL
-                                        time = 0
+                                        time = SystemClock.elapsedRealtime()
                                     }
                                 }
                             }
