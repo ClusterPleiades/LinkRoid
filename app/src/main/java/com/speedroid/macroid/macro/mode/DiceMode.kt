@@ -6,6 +6,8 @@ import android.os.SystemClock
 import android.util.Log
 import com.speedroid.macroid.Configs
 import com.speedroid.macroid.Configs.Companion.DELAY_DEFAULT
+import com.speedroid.macroid.Configs.Companion.DELAY_LONG
+import com.speedroid.macroid.Configs.Companion.DELAY_SPONGEBOB
 import com.speedroid.macroid.Configs.Companion.STATE_DICE_DUEL
 import com.speedroid.macroid.Configs.Companion.STATE_DICE_END
 import com.speedroid.macroid.Configs.Companion.STATE_DICE_READY
@@ -49,11 +51,17 @@ class DiceMode : BaseMode() {
                                     Log.d("test", "usual")
                                     // detect conversation
                                     detectResult = diceImageController.detectConvImage(scaledBitmap)
-                                    if (detectResult == null)
-                                        click(dicePoint)
-                                    else {
-                                        click(detectResult.clickPoint)
-                                        state = STATE_DICE_READY
+                                    if (detectResult == null) {
+                                        // detect move
+                                        detectResult = diceImageController.detectMoveImage(scaledBitmap)
+                                        if (detectResult == null) click(dicePoint)
+                                        else click(detectResult.clickPoint)
+                                    } else {
+                                        if (SystemClock.elapsedRealtime() - time > DELAY_SPONGEBOB) {
+                                            click(detectResult.clickPoint)
+                                            state = STATE_DICE_READY
+                                        } else
+                                            click(dicePoint)
                                     }
                                 }
                                 STATE_DICE_READY -> {
@@ -95,11 +103,10 @@ class DiceMode : BaseMode() {
                                     Log.d("test", "end")
                                     // detect conversation
                                     detectResult = diceImageController.detectConvImage(scaledBitmap)
-                                    if (detectResult == null)
-                                        click(backupClickPoint)
-                                    else {
-                                        click(backupClickPoint)
+                                    click(backupClickPoint)
+                                    if (detectResult != null) {
                                         state = STATE_DICE_USUAL
+                                        time = 0
                                     }
                                 }
                             }

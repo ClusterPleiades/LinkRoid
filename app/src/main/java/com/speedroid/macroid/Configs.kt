@@ -40,6 +40,7 @@ class Configs {
         const val DELAY_DEFAULT = 500L
         const val DELAY_LONG = 2000L
         const val DELAY_VERY_LONG = 2500L
+        const val DELAY_SPONGEBOB = 5000L
 
         const val THRESHOLD_DISTANCE = 3000000L
         const val THRESHOLD_TIME_DRAW = 2000L
