@@ -17,12 +17,14 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_DICE
 import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_GATE
 import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_STOP
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_MODE
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.mode.BaseMode
+import com.speedroid.macroid.macro.mode.DiceMode
 import com.speedroid.macroid.macro.mode.GateMode
 import com.speedroid.macroid.service.OverlayService
 import com.speedroid.macroid.service.ProjectionService
@@ -112,8 +114,12 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
                         DIALOG_TYPE_MODE -> {
                             when (adapterPosition) {
                                 DIALOG_POSITION_GATE -> {
-                                    // start handler
+                                    // start macro
                                     GateMode().startMacro()
+                                }
+                                DIALOG_POSITION_DICE -> {
+                                    // start macro
+                                    DiceMode().startMacro()
                                 }
                                 DIALOG_POSITION_STOP -> {
                                     // stop overlay service

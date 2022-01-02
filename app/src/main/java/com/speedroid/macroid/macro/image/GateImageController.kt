@@ -13,11 +13,10 @@ import com.speedroid.macroid.macro.DetectResult
 import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 
 class GateImageController : BaseImageController() {
-    // TODO update
     private val bottomDrawableResIdArray = arrayOf(
         R.drawable.image_button_gate,
         R.drawable.image_button_back,
-        R.drawable.image_background_dialog
+        R.drawable.image_background_conv
     )
     private val exceptionDrawableResIdArray = arrayOf(
         R.drawable.image_button_appear
@@ -86,12 +85,11 @@ class GateImageController : BaseImageController() {
         if (minDistance > THRESHOLD_DISTANCE)
             return null
 
-        // TODO update
         // initialize click point
         val clickPoint = when (bottomDrawableResIdArray[indexOfMin]) {
             R.drawable.image_button_gate -> Point(1080 / 16 * 3, IMAGE_HEIGHT_SMALL * 3 / 4 + y)
             R.drawable.image_button_back,
-            R.drawable.image_background_dialog -> Point(1080 / 2, IMAGE_HEIGHT_SMALL / 8 + y)
+            R.drawable.image_background_conv -> Point(1080 / 2, IMAGE_HEIGHT_SMALL / 8 + y)
             else -> null
         }
 
@@ -123,7 +121,6 @@ class GateImageController : BaseImageController() {
         if (minDistance > THRESHOLD_DISTANCE)
             return null
 
-        // TODO update
         // initialize click point
         val clickPoint = when (exceptionDrawableResIdArray[indexOfMin]) {
             R.drawable.image_button_appear -> Point(1080 / 4, IMAGE_HEIGHT_HUGE * 9 / 10 + y)

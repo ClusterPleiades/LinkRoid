@@ -1,6 +1,7 @@
 package com.speedroid.macroid.macro.mode
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Point
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
@@ -9,15 +10,17 @@ import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.service.GestureService
 import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 
-open class BaseMode {
+abstract class BaseMode {
     companion object {
         var macroHandler: Handler? = null
     }
 
     private val deviceController: DeviceController = DeviceController(preservedContext)
-    open val prefs = preservedContext.getSharedPreferences(Configs.PREFS, AppCompatActivity.MODE_PRIVATE)
+    open val prefs: SharedPreferences = preservedContext.getSharedPreferences(Configs.PREFS, AppCompatActivity.MODE_PRIVATE)
     open val screenWidth = deviceController.getWidthMax()
     open val screenHeight = deviceController.getHeightMax()
+
+    open lateinit var mainRunnable: Runnable
 
     init {
         // initialize handler
@@ -40,5 +43,9 @@ open class BaseMode {
         intent.putExtra("y1", startPoint.y)
         intent.putExtra("isDrag", true)
         preservedContext.startService(intent)
+    }
+
+    open fun startMacro() {
+        macroHandler!!.postDelayed(mainRunnable, Configs.DELAY_DEFAULT)
     }
 }

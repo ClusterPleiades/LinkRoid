@@ -9,7 +9,8 @@ class Configs {
         const val DIALOG_TYPE_MODE = 10
 
         const val DIALOG_POSITION_GATE = 0
-        const val DIALOG_POSITION_STOP = 1
+        const val DIALOG_POSITION_DICE = 1
+        const val DIALOG_POSITION_STOP = 2
 
         // setting
         const val SETTING_POSITION_TIME_OPPONENT = 0
@@ -49,9 +50,13 @@ class Configs {
 
         const val STATE_GATE_USUAL = 0
         const val STATE_GATE_READY = 1
-        const val STATE_DUEL_STANDBY = 2 // count 2 from non duel
-        const val STATE_DUEL_START = 3
-        const val STATE_DUEL_END = 4
+        const val STATE_GATE_STANDBY = 2 // count 2 from non duel
+        const val STATE_GATE_DUEL = 3
+        const val STATE_GATE_END = 4
+
+        const val STATE_DICE_USUAL = 0
+        const val STATE_DICE_READY = 1
+        const val STATE_DICE_END = 2
 
         const val LENGTH_DRAG = 600
         const val X_CENTER = 540

@@ -24,7 +24,7 @@ open class BaseImageController {
 
     init {
         // initialize drawable pixels
-        val winBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_confirm) as BitmapDrawable).bitmap
+        val winBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_win) as BitmapDrawable).bitmap
         winBitmap.getPixels(winDrawablePixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
         winBitmap.recycle()
 
@@ -71,7 +71,7 @@ open class BaseImageController {
         // initialize click point
         val clickPoint = Point(1080 / 2, y + IMAGE_HEIGHT_SMALL * 3 / 5)
 
-        return DetectResult(R.drawable.image_button_confirm, clickPoint, distance)
+        return DetectResult(R.drawable.image_button_win, clickPoint, distance)
     }
 
     fun detectRetryImage(screenBitmap: Bitmap): DetectResult? {
