@@ -19,6 +19,7 @@ open class BaseImageController {
     val screenHeight = deviceController.getHeightMax()
 
     private val winDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
+    private val drawDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_LARGE)
     private val largeRetryDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_LARGE)
     private val smallRetryDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
 
@@ -33,6 +34,10 @@ open class BaseImageController {
         val winBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_win) as BitmapDrawable).bitmap
         winBitmap.getPixels(winDrawablePixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_SMALL)
         winBitmap.recycle()
+
+        val drawBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_draw) as BitmapDrawable).bitmap
+        drawBitmap.getPixels(drawDrawablePixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_LARGE)
+        drawBitmap.recycle()
 
         val largeRetryBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_retry_l) as BitmapDrawable).bitmap
         largeRetryBitmap.getPixels(largeRetryDrawablePixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_LARGE)
@@ -63,6 +68,7 @@ open class BaseImageController {
     fun detectImage(screenBitmap: Bitmap, drawableResId: Int): DetectResult? {
         val imageHeight = when (drawableResId) {
             R.drawable.image_button_appear -> IMAGE_HEIGHT_HUGE
+            R.drawable.image_button_draw,
             R.drawable.image_button_retry_l -> IMAGE_HEIGHT_LARGE
             R.drawable.image_button_retry_s,
             R.drawable.image_button_win,
@@ -73,6 +79,7 @@ open class BaseImageController {
 
         val y = when (drawableResId) {
             R.drawable.image_button_appear,
+            R.drawable.image_button_draw,
             R.drawable.image_button_retry_l,
             R.drawable.image_button_retry_s -> (screenHeight - imageHeight) / 2
             R.drawable.image_button_win,
@@ -83,6 +90,7 @@ open class BaseImageController {
 
         val drawablePixels = when (drawableResId) {
             R.drawable.image_button_appear -> appearDrawablePixels
+            R.drawable.image_button_draw -> drawDrawablePixels
             R.drawable.image_button_retry_l -> largeRetryDrawablePixels
             R.drawable.image_button_retry_s -> smallRetryDrawablePixels
             R.drawable.image_button_win -> winDrawablePixels
@@ -98,15 +106,16 @@ open class BaseImageController {
 
         val clickPoint = when (drawableResId) {
             R.drawable.image_button_appear -> Point(1080 / 4, y + imageHeight * 9 / 10)
+            R.drawable.image_button_draw -> Point(1080 / 2, screenHeight / 2)
             R.drawable.image_button_retry_l -> Point(1080 * 3 / 4, y + imageHeight * 7 / 8)
             R.drawable.image_button_retry_s -> Point(1080 * 3 / 4, y + imageHeight * 9 / 10)
             R.drawable.image_button_win -> Point(1080 / 2, y + imageHeight * 3 / 5)
             R.drawable.image_button_back,
-            R.drawable.image_background_conv -> null
+            R.drawable.image_background_conv -> Point(1080 / 2, IMAGE_HEIGHT_SMALL / 8 + y) // duel button click point
             else -> return null
         }
 
-        return DetectResult(drawableResId, clickPoint, distance)
+        return DetectResult(drawableResId, clickPoint)
     }
 
     fun detectRetryImage(screenBitmap: Bitmap): DetectResult? {
@@ -138,5 +147,5 @@ open class BaseImageController {
         return croppedPixels
     }
 
-    class DetectResult(val drawableResId: Int, val clickPoint: Point?, val distance: Long)
+    class DetectResult(val drawableResId: Int, val clickPoint: Point?)
 }

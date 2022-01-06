@@ -9,13 +9,13 @@ import com.speedroid.macroid.Configs.Companion.DELAY_ENEMY_DEFAULT
 import com.speedroid.macroid.Configs.Companion.DELAY_LONG
 import com.speedroid.macroid.Configs.Companion.DELAY_VERY_LONG
 import com.speedroid.macroid.Configs.Companion.DURATION_DRAG
-import com.speedroid.macroid.Configs.Companion.STATE_GATE_END
-import com.speedroid.macroid.Configs.Companion.STATE_GATE_STANDBY
-import com.speedroid.macroid.Configs.Companion.STATE_GATE_DUEL
-import com.speedroid.macroid.Configs.Companion.STATE_GATE_READY
-import com.speedroid.macroid.Configs.Companion.STATE_GATE_USUAL
-import com.speedroid.macroid.Configs.Companion.THRESHOLD_TIME_DRAW
-import com.speedroid.macroid.Configs.Companion.THRESHOLD_TIME_STANDBY
+import com.speedroid.macroid.Configs.Companion.STATE_GATE_A_END
+import com.speedroid.macroid.Configs.Companion.STATE_GATE_A_STANDBY
+import com.speedroid.macroid.Configs.Companion.STATE_GATE_A_DUEL
+import com.speedroid.macroid.Configs.Companion.STATE_GATE_A_READY
+import com.speedroid.macroid.Configs.Companion.STATE_GATE_A_USUAL
+import com.speedroid.macroid.Configs.Companion.DELAY_DRAW
+import com.speedroid.macroid.Configs.Companion.DELAY_STANDBY
 import com.speedroid.macroid.Configs.Companion.X_CENTER
 import com.speedroid.macroid.Configs.Companion.X_MONSTER_RIGHT
 import com.speedroid.macroid.Configs.Companion.X_PHASE
@@ -34,7 +34,7 @@ class GateAMode : BaseMode() {
     private val gateAImageController: GateAImageController = GateAImageController()
     private val duelRunnableArrayList: ArrayList<Runnable> = ArrayList()
 
-    private var state = STATE_GATE_USUAL
+    private var state = STATE_GATE_A_USUAL
     private var time = 0L
     private var turn = 0
     private var backupClickPoint: Point? = null
@@ -61,7 +61,7 @@ class GateAMode : BaseMode() {
                         var detectResult = gateAImageController.detectRetryImage(scaledBitmap)
                         if (detectResult == null) {
                             when (state) {
-                                STATE_GATE_USUAL, STATE_GATE_READY -> {
+                                STATE_GATE_A_USUAL, STATE_GATE_A_READY -> {
                                     // detect image
                                     detectResult = gateAImageController.detectImage(scaledBitmap)
                                     if (detectResult != null) {
@@ -72,17 +72,17 @@ class GateAMode : BaseMode() {
                                         // change state
                                         if (detectResult.drawableResId == R.drawable.image_button_back) {
                                             state++
-                                            if (state == STATE_GATE_STANDBY) time = SystemClock.elapsedRealtime()
+                                            if (state == STATE_GATE_A_STANDBY) time = SystemClock.elapsedRealtime()
                                         }
                                     }
 
                                     // repeat
                                     macroHandler!!.postDelayed(this, DELAY_DEFAULT)
                                 }
-                                STATE_GATE_STANDBY -> {
+                                STATE_GATE_A_STANDBY -> {
                                     // change state
-                                    if (SystemClock.elapsedRealtime() - time > THRESHOLD_TIME_STANDBY + enemyDelay) {
-                                        state = STATE_GATE_DUEL
+                                    if (SystemClock.elapsedRealtime() - time > DELAY_STANDBY + enemyDelay) {
+                                        state = STATE_GATE_A_DUEL
                                         turn = 0
                                     } else {
                                         click(backupClickPoint)
@@ -91,7 +91,7 @@ class GateAMode : BaseMode() {
                                     // repeat
                                     macroHandler!!.postDelayed(this, DELAY_DEFAULT)
                                 }
-                                STATE_GATE_DUEL -> {
+                                STATE_GATE_A_DUEL -> {
                                     // detect win
                                     detectResult = gateAImageController.detectImage(scaledBitmap, R.drawable.image_button_win)
                                     if (detectResult == null) {
@@ -111,13 +111,13 @@ class GateAMode : BaseMode() {
                                         backupClickPoint = detectResult.clickPoint
 
                                         // change state
-                                        state = STATE_GATE_END
+                                        state = STATE_GATE_A_END
 
                                         // repeat
                                         macroHandler!!.postDelayed(this, DELAY_DEFAULT)
                                     }
                                 }
-                                STATE_GATE_END -> {
+                                STATE_GATE_A_END -> {
                                     // detect image
                                     detectResult = gateAImageController.detectBottomImage(scaledBitmap)
                                     if (detectResult == null) {
@@ -129,7 +129,7 @@ class GateAMode : BaseMode() {
 
                                         // change state
                                         if (detectResult.drawableResId == R.drawable.image_background_conv)
-                                            state = STATE_GATE_USUAL
+                                            state = STATE_GATE_A_USUAL
                                     }
 
                                     // repeat
@@ -160,7 +160,7 @@ class GateAMode : BaseMode() {
         // index 1: draw after
         Runnable {
             click(Point(X_SUMMON, screenHeight - Y_FROM_BOTTOM_SUMMON))
-            if (SystemClock.elapsedRealtime() - time > THRESHOLD_TIME_DRAW)
+            if (SystemClock.elapsedRealtime() - time > DELAY_DRAW)
                 macroHandler!!.postDelayed(duelRunnableArrayList[2], DELAY_DEFAULT)
             else
                 macroHandler!!.postDelayed(duelRunnableArrayList[1], DELAY_DEFAULT)

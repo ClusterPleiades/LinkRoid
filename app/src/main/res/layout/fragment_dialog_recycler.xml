@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/drawable_round"
-    android:paddingTop="@dimen/margin_small"
-    android:paddingBottom="@dimen/margin_small">
+    android:padding="@dimen/margin_small">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_dialog"

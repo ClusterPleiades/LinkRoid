@@ -46,7 +46,7 @@ class DiceImageController : BaseImageController() {
         // initialize click point
         val clickPoint = Point(1080 * 3 / 4, IMAGE_HEIGHT_SMALL / 2 + y)
 
-        return DetectResult(R.drawable.image_button_retry_s, clickPoint, distance)
+        return DetectResult(R.drawable.image_button_retry_s, clickPoint)
     }
 
     fun detectMoveImage(screenBitmap: Bitmap): DetectResult? {
@@ -69,6 +69,6 @@ class DiceImageController : BaseImageController() {
         // initialize click point
         val clickPoint = Point(1080 * 3 / 4, IMAGE_HEIGHT_LARGE + y)
 
-        return DetectResult(R.drawable.image_button_move, clickPoint, distance)
+        return DetectResult(R.drawable.image_button_move, clickPoint)
     }
 }

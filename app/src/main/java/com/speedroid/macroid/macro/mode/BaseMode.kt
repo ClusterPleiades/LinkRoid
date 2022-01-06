@@ -24,6 +24,7 @@ abstract class BaseMode {
 
     init {
         // initialize handler
+        if (macroHandler != null) macroHandler!!.removeMessages(0)
         macroHandler = Handler(preservedContext.mainLooper)
     }
 

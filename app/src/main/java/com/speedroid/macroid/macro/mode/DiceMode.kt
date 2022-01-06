@@ -10,7 +10,7 @@ import com.speedroid.macroid.Configs.Companion.STATE_DICE_END
 import com.speedroid.macroid.Configs.Companion.STATE_DICE_READY
 import com.speedroid.macroid.Configs.Companion.STATE_DICE_STANDBY
 import com.speedroid.macroid.Configs.Companion.STATE_DICE_USUAL
-import com.speedroid.macroid.Configs.Companion.THRESHOLD_TIME_STANDBY
+import com.speedroid.macroid.Configs.Companion.DELAY_STANDBY
 import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.image.DiceImageController
 import com.speedroid.macroid.service.ProjectionService
@@ -82,7 +82,7 @@ class DiceMode : BaseMode() {
                                     }
                                 }
                                 STATE_DICE_DUEL -> {
-                                    if (SystemClock.elapsedRealtime() - time > THRESHOLD_TIME_STANDBY) {
+                                    if (SystemClock.elapsedRealtime() - time > DELAY_STANDBY) {
                                         // detect win
                                         detectResult = diceImageController.detectImage(scaledBitmap, R.drawable.image_button_win)
                                         if (detectResult == null) {

@@ -62,7 +62,7 @@ class GateAImageController : BaseImageController() {
             else -> null
         }
 
-        return DetectResult(bottomDrawableResIdArray[indexOfMin], clickPoint, minDistance)
+        return DetectResult(bottomDrawableResIdArray[indexOfMin], clickPoint)
     }
 
     private fun detectExceptionImage(screenBitmap: Bitmap): DetectResult? {
@@ -96,6 +96,6 @@ class GateAImageController : BaseImageController() {
             else -> null
         }
 
-        return DetectResult(exceptionDrawableResIdArray[indexOfMin], clickPoint, minDistance)
+        return DetectResult(exceptionDrawableResIdArray[indexOfMin], clickPoint)
     }
 }
