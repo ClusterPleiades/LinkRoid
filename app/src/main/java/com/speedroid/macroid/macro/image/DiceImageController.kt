@@ -9,8 +9,6 @@ import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT_SMALL
 import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
 import com.speedroid.macroid.Configs.Companion.THRESHOLD_DISTANCE
 import com.speedroid.macroid.R
-import com.speedroid.macroid.macro.DetectResult
-import com.speedroid.macroid.ui.activity.ModeActivity
 import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 
 class DiceImageController : BaseImageController() {

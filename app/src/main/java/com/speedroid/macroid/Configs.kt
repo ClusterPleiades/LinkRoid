@@ -8,9 +8,10 @@ class Configs {
         const val DIALOG_TYPE_ACCESS = 2
         const val DIALOG_TYPE_MODE = 10
 
-        const val DIALOG_POSITION_GATE = 0
-        const val DIALOG_POSITION_DICE = 1
-        const val DIALOG_POSITION_STOP = 2
+        const val DIALOG_POSITION_GATE_A = 0
+        const val DIALOG_POSITION_GATE_D = 1
+        const val DIALOG_POSITION_DICE = 2
+        const val DIALOG_POSITION_STOP = 3
 
         // setting
         const val SETTING_POSITION_TIME_OPPONENT = 0
@@ -30,6 +31,7 @@ class Configs {
         // prefs
         const val PREFS = "prefs"
         const val DELAY_ENEMY = "delay_enemy" // 6000 8000 10000
+        const val DELAY_ENEMY_DEFAULT = 8000L
 
         // macro
         const val IMAGE_WIDTH = 1080
@@ -74,6 +76,4 @@ class Configs {
         // 1080 290
         // 1080 800
     }
-
-
 }

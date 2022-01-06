@@ -18,14 +18,16 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_DICE
-import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_GATE
+import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_GATE_A
+import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_GATE_D
 import com.speedroid.macroid.Configs.Companion.DIALOG_POSITION_STOP
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_MODE
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.mode.BaseMode
 import com.speedroid.macroid.macro.mode.DiceMode
-import com.speedroid.macroid.macro.mode.GateMode
+import com.speedroid.macroid.macro.mode.GateAMode
+import com.speedroid.macroid.macro.mode.GateDMode
 import com.speedroid.macroid.service.OverlayService
 import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
@@ -100,7 +102,7 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
     }
 
     inner class DialogRecyclerAdapter : RecyclerView.Adapter<DialogRecyclerAdapter.DialogViewHolder>() {
-        lateinit var textArray: Array<String>
+        private lateinit var textArray: Array<String>
 
         inner class DialogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             var textView: TextView = itemView.findViewById(R.id.message_dialog_recycler)
@@ -113,9 +115,13 @@ class RecyclerDialogFragment(private val type: Int) : androidx.fragment.app.Dial
                     when (type) {
                         DIALOG_TYPE_MODE -> {
                             when (adapterPosition) {
-                                DIALOG_POSITION_GATE -> {
+                                DIALOG_POSITION_GATE_A -> {
                                     // start macro
-                                    GateMode().startMacro()
+                                    GateAMode().startMacro()
+                                }
+                                DIALOG_POSITION_GATE_D -> {
+                                    // start macro
+                                    GateDMode().startMacro()
                                 }
                                 DIALOG_POSITION_DICE -> {
                                     // start macro

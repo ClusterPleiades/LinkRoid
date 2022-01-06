@@ -14,7 +14,6 @@ import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.NotificationController
 import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.mode.BaseMode
-import com.speedroid.macroid.macro.mode.GateMode
 import com.speedroid.macroid.ui.activity.ModeActivity
 
 class OverlayService : Service() {

@@ -5,6 +5,7 @@ import android.graphics.Point
 import android.os.SystemClock
 import com.speedroid.macroid.Configs.Companion.DELAY_DEFAULT
 import com.speedroid.macroid.Configs.Companion.DELAY_ENEMY
+import com.speedroid.macroid.Configs.Companion.DELAY_ENEMY_DEFAULT
 import com.speedroid.macroid.Configs.Companion.DELAY_LONG
 import com.speedroid.macroid.Configs.Companion.DELAY_VERY_LONG
 import com.speedroid.macroid.Configs.Companion.DURATION_DRAG
@@ -24,13 +25,13 @@ import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_MONSTER
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_PHASE
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_SUMMON
 import com.speedroid.macroid.R
-import com.speedroid.macroid.macro.image.GateImageController
+import com.speedroid.macroid.macro.image.GateAImageController
 import com.speedroid.macroid.service.ProjectionService
 
-class GateMode : BaseMode() {
-    private val enemyDelay = prefs.getLong(DELAY_ENEMY, 8000)
+class GateAMode : BaseMode() {
+    private val enemyDelay = prefs.getLong(DELAY_ENEMY, DELAY_ENEMY_DEFAULT)
 
-    private val gateImageController: GateImageController = GateImageController()
+    private val gateAImageController: GateAImageController = GateAImageController()
     private val duelRunnableArrayList: ArrayList<Runnable> = ArrayList()
 
     private var state = STATE_GATE_USUAL
@@ -57,12 +58,12 @@ class GateMode : BaseMode() {
                         macroHandler!!.postDelayed(this, DELAY_DEFAULT)
                     else {
                         // detect retry
-                        var detectResult = gateImageController.detectRetryImage(scaledBitmap)
+                        var detectResult = gateAImageController.detectRetryImage(scaledBitmap)
                         if (detectResult == null) {
                             when (state) {
                                 STATE_GATE_USUAL, STATE_GATE_READY -> {
                                     // detect image
-                                    detectResult = gateImageController.detectImage(scaledBitmap)
+                                    detectResult = gateAImageController.detectImage(scaledBitmap)
                                     if (detectResult != null) {
                                         // click
                                         click(detectResult.clickPoint)
@@ -92,7 +93,7 @@ class GateMode : BaseMode() {
                                 }
                                 STATE_GATE_DUEL -> {
                                     // detect win
-                                    detectResult = gateImageController.detectWinImage(scaledBitmap)
+                                    detectResult = gateAImageController.detectImage(scaledBitmap, R.drawable.image_button_win)
                                     if (detectResult == null) {
                                         if (turn == 3) {
                                             // repeat
@@ -118,7 +119,7 @@ class GateMode : BaseMode() {
                                 }
                                 STATE_GATE_END -> {
                                     // detect image
-                                    detectResult = gateImageController.detectBottomImage(scaledBitmap)
+                                    detectResult = gateAImageController.detectBottomImage(scaledBitmap)
                                     if (detectResult == null) {
                                         // click
                                         click(backupClickPoint)

@@ -3,10 +3,7 @@ package com.speedroid.macroid.macro.mode
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.SystemClock
-import android.util.Log
-import com.speedroid.macroid.Configs
 import com.speedroid.macroid.Configs.Companion.DELAY_DEFAULT
-import com.speedroid.macroid.Configs.Companion.DELAY_LONG
 import com.speedroid.macroid.Configs.Companion.DELAY_SPONGEBOB
 import com.speedroid.macroid.Configs.Companion.STATE_DICE_DUEL
 import com.speedroid.macroid.Configs.Companion.STATE_DICE_END
@@ -14,6 +11,7 @@ import com.speedroid.macroid.Configs.Companion.STATE_DICE_READY
 import com.speedroid.macroid.Configs.Companion.STATE_DICE_STANDBY
 import com.speedroid.macroid.Configs.Companion.STATE_DICE_USUAL
 import com.speedroid.macroid.Configs.Companion.THRESHOLD_TIME_STANDBY
+import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.image.DiceImageController
 import com.speedroid.macroid.service.ProjectionService
 
@@ -49,7 +47,7 @@ class DiceMode : BaseMode() {
                             when (state) {
                                 STATE_DICE_USUAL -> {
                                     // detect conversation
-                                    detectResult = diceImageController.detectConvImage(scaledBitmap)
+                                    detectResult = diceImageController.detectImage(scaledBitmap, R.drawable.image_background_conv)
                                     if (detectResult == null) {
                                         // detect move
                                         detectResult = diceImageController.detectMoveImage(scaledBitmap)
@@ -66,7 +64,7 @@ class DiceMode : BaseMode() {
                                 }
                                 STATE_DICE_READY -> {
                                     // detect back
-                                    detectResult = diceImageController.detectBackImage(scaledBitmap)
+                                    detectResult = diceImageController.detectImage(scaledBitmap, R.drawable.image_button_back)
                                     if (detectResult == null) {
                                         // detect difficulty
                                         detectResult = diceImageController.detectDifficultyImage(scaledBitmap)
@@ -76,7 +74,7 @@ class DiceMode : BaseMode() {
                                 }
                                 STATE_DICE_STANDBY -> {
                                     // detect back
-                                    detectResult = diceImageController.detectBackImage(scaledBitmap)
+                                    detectResult = diceImageController.detectImage(scaledBitmap, R.drawable.image_button_back)
                                     if (detectResult != null) {
                                         click(autoPoint)
                                         state = STATE_DICE_DUEL
@@ -86,7 +84,7 @@ class DiceMode : BaseMode() {
                                 STATE_DICE_DUEL -> {
                                     if (SystemClock.elapsedRealtime() - time > THRESHOLD_TIME_STANDBY) {
                                         // detect win
-                                        detectResult = diceImageController.detectWinImage(scaledBitmap)
+                                        detectResult = diceImageController.detectImage(scaledBitmap, R.drawable.image_button_win)
                                         if (detectResult == null) {
                                             click(autoPoint)
                                         } else {
@@ -98,7 +96,7 @@ class DiceMode : BaseMode() {
                                 }
                                 STATE_DICE_END -> {
                                     // detect conversation
-                                    detectResult = diceImageController.detectConvImage(scaledBitmap)
+                                    detectResult = diceImageController.detectImage(scaledBitmap, R.drawable.image_background_conv)
                                     click(backupClickPoint)
                                     if (detectResult != null) {
                                         state = STATE_DICE_USUAL

@@ -4,10 +4,8 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.media.projection.MediaProjectionManager
-import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
@@ -22,11 +20,10 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat.canScrollVertically
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.speedroid.macroid.Configs.Companion.DELAY_ENEMY
+import com.speedroid.macroid.Configs.Companion.DELAY_ENEMY_DEFAULT
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_ACCESS
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_BATTERY
 import com.speedroid.macroid.Configs.Companion.DIALOG_TYPE_OVERLAY
@@ -36,11 +33,9 @@ import com.speedroid.macroid.Configs.Companion.SETTING_POSITION_TIME_OPPONENT
 import com.speedroid.macroid.DeviceController
 import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.mode.BaseMode
-import com.speedroid.macroid.macro.mode.GateMode
 import com.speedroid.macroid.service.OverlayService
 import com.speedroid.macroid.service.ProjectionService
 import com.speedroid.macroid.ui.fragment.dialog.DefaultDialogFragment
-import com.speedroid.macroid.ui.fragment.dialog.RecyclerDialogFragment
 
 
 class MainActivity : AppCompatActivity() {
@@ -177,20 +172,20 @@ class MainActivity : AppCompatActivity() {
             when (position) {
                 SETTING_POSITION_TIME_OPPONENT -> {
                     // contents
-                    var currentDelay = prefs.getLong(DELAY_ENEMY, 8000)
+                    var currentDelay = prefs.getLong(DELAY_ENEMY, DELAY_ENEMY_DEFAULT)
                     holder.contentsTextView.text = "$currentDelay ms"
 
                     // seek bar
-                    holder.seekBar.max = 2 // 0 1 2
-                    holder.seekBar.progress = ((currentDelay - 6000) / 2000).toInt()
+                    holder.seekBar.max = 4 // 0 1 2 3 4
+                    holder.seekBar.progress = ((currentDelay - 6000L) / 1000L).toInt()
                     holder.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
                         override fun onStopTrackingTouch(seekBar: SeekBar) {}
                         override fun onStartTrackingTouch(seekBar: SeekBar) {}
                         override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                            editor.putLong(DELAY_ENEMY, 6000L + progress * 2000L)
+                            editor.putLong(DELAY_ENEMY, 6000L + progress * 1000L)
                             editor.apply()
 
-                            currentDelay = prefs.getLong(DELAY_ENEMY, 6000)
+                            currentDelay = prefs.getLong(DELAY_ENEMY, DELAY_ENEMY_DEFAULT)
                             holder.contentsTextView.text = "$currentDelay ms"
                         }
                     })

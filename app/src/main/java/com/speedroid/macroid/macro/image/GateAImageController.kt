@@ -2,17 +2,13 @@ package com.speedroid.macroid.macro.image
 
 import android.graphics.Bitmap
 import android.graphics.Point
-import android.graphics.drawable.BitmapDrawable
-import androidx.core.content.ContextCompat
-import com.speedroid.macroid.Configs.Companion.THRESHOLD_DISTANCE
-import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT_SMALL
 import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT_HUGE
+import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT_SMALL
 import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
+import com.speedroid.macroid.Configs.Companion.THRESHOLD_DISTANCE
 import com.speedroid.macroid.R
-import com.speedroid.macroid.macro.DetectResult
-import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 
-class GateImageController : BaseImageController() {
+class GateAImageController : BaseImageController() {
     private val bottomDrawableResIdArray = arrayOf(
         R.drawable.image_button_gate,
         R.drawable.image_button_back,
@@ -23,25 +19,7 @@ class GateImageController : BaseImageController() {
     )
 
     private val bottomDrawablePixelsArray: Array<IntArray?> = arrayOf(gateDrawablePixels, convDrawablePixels, backDrawablePixels)
-    private val exceptionDrawablePixelsArray: Array<IntArray?> = arrayOfNulls(exceptionDrawableResIdArray.size)
-
-    init {
-        // initialize bitmap
-        val exceptionBitmapArray: Array<Bitmap> = Array(exceptionDrawableResIdArray.size) { i ->
-            (ContextCompat.getDrawable(preservedContext, exceptionDrawableResIdArray[i]) as BitmapDrawable).bitmap
-        }
-
-        // initialize pixels
-        var pixels: IntArray
-        for (i in exceptionDrawablePixelsArray.indices) {
-            pixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_HUGE)
-            exceptionBitmapArray[i].getPixels(pixels, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT_HUGE)
-            exceptionDrawablePixelsArray[i] = pixels
-        }
-
-        // recycle bitmap array
-        for (i in exceptionBitmapArray.indices) exceptionBitmapArray[i].recycle()
-    }
+    private val exceptionDrawablePixelsArray: Array<IntArray?> = arrayOf(appearDrawablePixels)
 
     fun detectImage(screenBitmap: Bitmap): DetectResult? {
         // detect
