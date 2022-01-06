@@ -23,9 +23,9 @@ open class BaseImageController {
     private val largeRetryDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_LARGE)
     private val smallRetryDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
 
+    val gateDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
     val backDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
     val convDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
-    val gateDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_SMALL)
 
     val appearDrawablePixels = IntArray(IMAGE_WIDTH * IMAGE_HEIGHT_HUGE)
 
@@ -72,6 +72,7 @@ open class BaseImageController {
             R.drawable.image_button_retry_l -> IMAGE_HEIGHT_LARGE
             R.drawable.image_button_retry_s,
             R.drawable.image_button_win,
+            R.drawable.image_button_gate,
             R.drawable.image_button_back,
             R.drawable.image_background_conv -> IMAGE_HEIGHT_SMALL
             else -> return null
@@ -83,6 +84,7 @@ open class BaseImageController {
             R.drawable.image_button_retry_l,
             R.drawable.image_button_retry_s -> (screenHeight - imageHeight) / 2
             R.drawable.image_button_win,
+            R.drawable.image_button_gate,
             R.drawable.image_button_back,
             R.drawable.image_background_conv -> screenHeight - imageHeight
             else -> return null
@@ -94,6 +96,7 @@ open class BaseImageController {
             R.drawable.image_button_retry_l -> largeRetryDrawablePixels
             R.drawable.image_button_retry_s -> smallRetryDrawablePixels
             R.drawable.image_button_win -> winDrawablePixels
+            R.drawable.image_button_gate -> gateDrawablePixels
             R.drawable.image_button_back -> backDrawablePixels
             R.drawable.image_background_conv -> convDrawablePixels
             else -> return null
@@ -110,6 +113,7 @@ open class BaseImageController {
             R.drawable.image_button_retry_l -> Point(1080 * 3 / 4, y + imageHeight * 7 / 8)
             R.drawable.image_button_retry_s -> Point(1080 * 3 / 4, y + imageHeight * 9 / 10)
             R.drawable.image_button_win -> Point(1080 / 2, y + imageHeight * 3 / 5)
+            R.drawable.image_button_gate -> Point(1080 / 16 * 3, IMAGE_HEIGHT_SMALL * 3 / 4 + y)
             R.drawable.image_button_back,
             R.drawable.image_background_conv -> Point(1080 / 2, IMAGE_HEIGHT_SMALL / 8 + y) // duel button click point
             else -> return null

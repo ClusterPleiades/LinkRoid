@@ -3,6 +3,7 @@ package com.speedroid.macroid.macro.mode
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.SystemClock
+import android.util.Log
 import com.speedroid.macroid.Configs.Companion.DELAY_DEFAULT
 import com.speedroid.macroid.Configs.Companion.DELAY_DOUBLE
 import com.speedroid.macroid.Configs.Companion.DELAY_ENEMY
