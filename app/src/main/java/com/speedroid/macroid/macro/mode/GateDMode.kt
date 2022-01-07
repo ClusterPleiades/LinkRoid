@@ -3,6 +3,7 @@ package com.speedroid.macroid.macro.mode
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.SystemClock
+import android.util.Log
 import com.speedroid.macroid.Configs.Companion.DELAY_DEFAULT
 import com.speedroid.macroid.Configs.Companion.DELAY_DOUBLE
 import com.speedroid.macroid.Configs.Companion.DELAY_LONG
@@ -161,22 +162,37 @@ class GateDMode : BaseMode() {
     private fun initializeDuelRunnableArrayList() {
         // index 0: draw
         Runnable {
-            click(Point(X_CENTER, screenHeight / 2))
-
             val screenBitmap = ProjectionService.getScreenProjection()
             if (screenBitmap == null) macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
             else {
                 val scaledBitmap = if (screenBitmap.width == screenWidth) screenBitmap
                 else Bitmap.createScaledBitmap(screenBitmap, screenWidth, screenHeight, true)
 
-                val detectResult = imageController.detectDeckImage(scaledBitmap)
-                when (detectResult.drawableResId) {
-                    R.drawable.image_background_player -> {
-                        if (turnCount > 3 && turnCount % 2 == 0) macroHandler!!.postDelayed(duelRunnableArrayList[5], DELAY_DEFAULT)
-                        else macroHandler!!.postDelayed(duelRunnableArrayList[1], DELAY_DEFAULT)
+                // detect win
+                var detectResult = if (turnCount > 1) imageController.detectImage(scaledBitmap, R.drawable.image_button_win) else null
+                if (detectResult == null) {
+                    click(Point(X_CENTER, screenHeight / 2))
+                    detectResult = imageController.detectDeckImage(scaledBitmap)
+                    when (detectResult.drawableResId) {
+                        R.drawable.image_background_player -> {
+                            Log.d("test", "detect player")
+                            if (turnCount > 3 && turnCount % 2 == 0) macroHandler!!.postDelayed(duelRunnableArrayList[7], DELAY_DEFAULT)
+                            else macroHandler!!.postDelayed(duelRunnableArrayList[1], DELAY_DEFAULT)
+                        }
+                        R.drawable.image_background_enemy -> {
+                            Log.d("test", "detect enemy")
+                            macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
+                        }
+                        R.drawable.image_background_draw -> {
+                            Log.d("test", "detect draw")
+                            macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
+                        }
                     }
-                    R.drawable.image_background_enemy,
-                    R.drawable.image_background_draw -> macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
+                } else {
+                    click(detectResult.clickPoint)
+                    backupClickPoint = detectResult.clickPoint
+                    state = STATE_GATE_D_END
+                    macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
                 }
 
                 scaledBitmap.recycle()
@@ -193,7 +209,7 @@ class GateDMode : BaseMode() {
         // index 2: set monster
         Runnable {
             click(Point(X_SET, screenHeight - Y_FROM_BOTTOM_SUMMON))
-            macroHandler!!.postDelayed(duelRunnableArrayList[3], DELAY_LONG)
+            macroHandler!!.postDelayed(duelRunnableArrayList[3], DELAY_DOUBLE)
         }.also { duelRunnableArrayList.add(it) }
 
         // index 3: click phase
@@ -202,21 +218,33 @@ class GateDMode : BaseMode() {
             macroHandler!!.postDelayed(duelRunnableArrayList[4], DELAY_DEFAULT)
         }.also { duelRunnableArrayList.add(it) }
 
-        // index 4: click phase (end)
+        // index 4: click phase (battle)
         Runnable {
-            click(Point(X_PHASE, screenHeight - Y_FROM_BOTTOM_PHASE_HIGH))
+            click(Point(X_PHASE, screenHeight - Y_FROM_BOTTOM_PHASE))
+            macroHandler!!.postDelayed(duelRunnableArrayList[5], DELAY_DEFAULT)
+        }.also { duelRunnableArrayList.add(it) }
+
+        // index 5: click phase
+        Runnable {
+            click(Point(X_PHASE, screenHeight - Y_FROM_BOTTOM_PHASE))
+            macroHandler!!.postDelayed(duelRunnableArrayList[6], DELAY_DEFAULT)
+        }.also { duelRunnableArrayList.add(it) }
+
+        // index 6: click phase (end)
+        Runnable {
+            click(Point(X_PHASE, screenHeight - Y_FROM_BOTTOM_PHASE))
             turnCount++
-            macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
+            macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
         }.also { duelRunnableArrayList.add(it) }
 
         // case exception
-        // index 5: click monster
+        // index 7: click monster
         Runnable {
             click(Point(X_CENTER, screenHeight - Y_FROM_BOTTOM_MONSTER))
-            macroHandler!!.postDelayed(duelRunnableArrayList[6], DELAY_DEFAULT + DURATION_CLICK)
+            macroHandler!!.postDelayed(duelRunnableArrayList[8], DELAY_DEFAULT + DURATION_CLICK)
         }.also { duelRunnableArrayList.add(it) }
 
-        // index 6: def to atk
+        // index 8: def to atk
         Runnable {
             click(Point(X_CENTER, screenHeight - Y_FROM_BOTTOM_SUMMON))
             macroHandler!!.postDelayed(duelRunnableArrayList[3], DELAY_DOUBLE)

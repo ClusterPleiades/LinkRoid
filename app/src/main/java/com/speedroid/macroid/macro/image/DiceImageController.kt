@@ -36,7 +36,7 @@ class DiceImageController : BaseImageController() {
         croppedBitmap.recycle()
 
         // detect
-        getDistanceAverage(difficultyDrawablePixels, croppedPixels) ?: return null
+        getDistanceAverageResult(difficultyDrawablePixels, croppedPixels) ?: return null
 
         // initialize click point
         val clickPoint = Point(1080 * 3 / 4, IMAGE_HEIGHT_SMALL / 2 + y)
@@ -55,7 +55,7 @@ class DiceImageController : BaseImageController() {
         croppedBitmap.recycle()
 
         // detect
-        getDistanceAverage(moveDrawablePixels, croppedPixels) ?: return null
+        getDistanceAverageResult(moveDrawablePixels, croppedPixels) ?: return null
 
         // initialize click point
         val clickPoint = Point(1080 * 3 / 4, IMAGE_HEIGHT_LARGE + y)

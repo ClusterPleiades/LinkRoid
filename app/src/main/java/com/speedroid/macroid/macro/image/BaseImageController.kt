@@ -41,16 +41,38 @@ open class BaseImageController {
         val gateBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_gate) as BitmapDrawable).bitmap
         val appearBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_appear) as BitmapDrawable).bitmap
 
-        playerBitmap.getPixels(pixelsHashMap[R.drawable.image_background_player], 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, playerBitmap.height)
-        enemyBitmap.getPixels(pixelsHashMap[R.drawable.image_background_enemy], 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, enemyBitmap.height)
-        drawBitmap.getPixels(pixelsHashMap[R.drawable.image_background_draw], 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, drawBitmap.height)
-        winBitmap.getPixels(pixelsHashMap[R.drawable.image_button_win], 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, winBitmap.height)
-        largeRetryBitmap.getPixels(pixelsHashMap[R.drawable.image_button_retry_l], 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, largeRetryBitmap.height)
-        smallRetryBitmap.getPixels(pixelsHashMap[R.drawable.image_button_retry_s], 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, smallRetryBitmap.height)
-        backBitmap.getPixels(pixelsHashMap[R.drawable.image_button_back], 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, backBitmap.height)
-        convBitmap.getPixels(pixelsHashMap[R.drawable.image_background_conv], 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, convBitmap.height)
-        gateBitmap.getPixels(pixelsHashMap[R.drawable.image_button_gate], 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, gateBitmap.height)
-        appearBitmap.getPixels(pixelsHashMap[R.drawable.image_button_appear], 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, appearBitmap.height)
+        val playerPixelArray = IntArray(playerBitmap.width * playerBitmap.height)
+        val enemyPixelArray = IntArray(enemyBitmap.width * enemyBitmap.height)
+        val drawPixelArray = IntArray(drawBitmap.width * drawBitmap.height)
+        val winPixelArray = IntArray(winBitmap.width * winBitmap.height)
+        val largeRetryPixelArray = IntArray(largeRetryBitmap.width * largeRetryBitmap.height)
+        val smallRetryPixelArray = IntArray(smallRetryBitmap.width * smallRetryBitmap.height)
+        val backPixelArray = IntArray(backBitmap.width * backBitmap.height)
+        val convPixelArray = IntArray(convBitmap.width * convBitmap.height)
+        val gatePixelArray = IntArray(gateBitmap.width * gateBitmap.height)
+        val appearPixelArray = IntArray(appearBitmap.width * appearBitmap.height)
+
+        playerBitmap.getPixels(playerPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, playerBitmap.height)
+        enemyBitmap.getPixels(enemyPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, enemyBitmap.height)
+        drawBitmap.getPixels(drawPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, drawBitmap.height)
+        winBitmap.getPixels(winPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, winBitmap.height)
+        largeRetryBitmap.getPixels(largeRetryPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, largeRetryBitmap.height)
+        smallRetryBitmap.getPixels(smallRetryPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, smallRetryBitmap.height)
+        backBitmap.getPixels(backPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, backBitmap.height)
+        convBitmap.getPixels(convPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, convBitmap.height)
+        gateBitmap.getPixels(gatePixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, gateBitmap.height)
+        appearBitmap.getPixels(appearPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, appearBitmap.height)
+
+        pixelsHashMap[R.drawable.image_background_player] = playerPixelArray
+        pixelsHashMap[R.drawable.image_background_enemy] = enemyPixelArray
+        pixelsHashMap[R.drawable.image_background_draw] = drawPixelArray
+        pixelsHashMap[R.drawable.image_button_win] = winPixelArray
+        pixelsHashMap[R.drawable.image_button_retry_l] = largeRetryPixelArray
+        pixelsHashMap[R.drawable.image_button_retry_s] = smallRetryPixelArray
+        pixelsHashMap[R.drawable.image_button_back] = backPixelArray
+        pixelsHashMap[R.drawable.image_background_conv] = convPixelArray
+        pixelsHashMap[R.drawable.image_button_gate] = gatePixelArray
+        pixelsHashMap[R.drawable.image_button_appear] = appearPixelArray
 
         heightHashMap[R.drawable.image_background_player] = playerBitmap.height
         heightHashMap[R.drawable.image_background_enemy] = enemyBitmap.height
@@ -126,19 +148,21 @@ open class BaseImageController {
         return croppedPixels
     }
 
-    fun getDistanceAverage(drawablePixels: IntArray, screenPixels: IntArray): Long? {
+    private fun getDistanceAverage(drawablePixels: IntArray, screenPixels: IntArray): Long {
         var distance = 0L
         var compareCount = 0
 
-        for (i in drawablePixels.indices) {
-            if (drawablePixels[i] == 0)
-                continue
-            distance += abs(drawablePixels[i] - screenPixels[i])
-            compareCount++
-        }
+        for (i in drawablePixels.indices)
+            if (drawablePixels[i] != 0) {
+                distance += abs(drawablePixels[i] - screenPixels[i])
+                compareCount++
+            }
 
-        val distanceAverage = distance / compareCount
+        return distance / compareCount
+    }
 
+    fun getDistanceAverageResult(drawablePixels: IntArray, screenPixels: IntArray): Long? {
+        val distanceAverage = getDistanceAverage(drawablePixels, screenPixels)
         return if (distanceAverage > THRESHOLD_DISTANCE) null
         else distanceAverage
     }
@@ -146,7 +170,7 @@ open class BaseImageController {
     fun detectImage(screenBitmap: Bitmap, drawableResId: Int): DetectResult? {
         val imagePixels = pixelsHashMap[drawableResId] ?: return null
         val croppedPixels = getCroppedPixels(screenBitmap, drawableResId) ?: return null
-        getDistanceAverage(imagePixels, croppedPixels) ?: return null
+        getDistanceAverageResult(imagePixels, croppedPixels) ?: return null
         return DetectResult(drawableResId)
     }
 
@@ -158,9 +182,9 @@ open class BaseImageController {
 
     fun detectDeckImage(screenBitmap: Bitmap): DetectResult {
         val croppedPixels = getCroppedPixels(screenBitmap, R.drawable.image_background_player)!!
-        val playerDistanceAverage = getDistanceAverage(pixelsHashMap[R.drawable.image_background_player]!!, croppedPixels) ?: Long.MAX_VALUE
-        val enemyDistanceAverage = getDistanceAverage(pixelsHashMap[R.drawable.image_background_enemy]!!, croppedPixels) ?: Long.MAX_VALUE
-        val drawDistanceAverage = getDistanceAverage(pixelsHashMap[R.drawable.image_background_draw]!!, croppedPixels) ?: Long.MAX_VALUE
+        val playerDistanceAverage = getDistanceAverage(pixelsHashMap[R.drawable.image_background_player]!!, croppedPixels)
+        val enemyDistanceAverage = getDistanceAverage(pixelsHashMap[R.drawable.image_background_enemy]!!, croppedPixels)
+        val drawDistanceAverage = getDistanceAverage(pixelsHashMap[R.drawable.image_background_draw]!!, croppedPixels)
 
         var minDistanceAverage = Long.MAX_VALUE
         var drawableResId = R.drawable.image_background_enemy

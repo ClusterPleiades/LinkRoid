@@ -48,7 +48,7 @@ class GateAImageController : BaseImageController() {
         var minDistance = Long.MAX_VALUE
         var indexOfMin = 0
         for (i in bottomDrawablePixelsArray.indices) {
-            val distance = getDistanceAverage(bottomDrawablePixelsArray[i]!!, croppedPixels)
+            val distance = getDistanceAverageResult(bottomDrawablePixelsArray[i]!!, croppedPixels)
             if (distance != null)
                 if (distance < minDistance) {
                     minDistance = distance
@@ -85,7 +85,7 @@ class GateAImageController : BaseImageController() {
         var minDistance = Long.MAX_VALUE
         var indexOfMin = 0
         for (i in exceptionDrawablePixelsArray.indices) {
-            val distance = getDistanceAverage(exceptionDrawablePixelsArray[i]!!, croppedPixels)
+            val distance = getDistanceAverageResult(exceptionDrawablePixelsArray[i]!!, croppedPixels)
             if (distance != null)
                 if (distance < minDistance) {
                     minDistance = distance
