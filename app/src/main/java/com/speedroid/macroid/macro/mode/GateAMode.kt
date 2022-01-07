@@ -15,7 +15,7 @@ import com.speedroid.macroid.Configs.Companion.STATE_GATE_A_DUEL
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_A_READY
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_A_USUAL
 import com.speedroid.macroid.Configs.Companion.DELAY_DRAW
-import com.speedroid.macroid.Configs.Companion.DELAY_STANDBY
+import com.speedroid.macroid.Configs.Companion.THRESHOLD_STANDBY
 import com.speedroid.macroid.Configs.Companion.X_CENTER
 import com.speedroid.macroid.Configs.Companion.X_MONSTER_RIGHT
 import com.speedroid.macroid.Configs.Companion.X_PHASE
@@ -81,7 +81,7 @@ class GateAMode : BaseMode() {
                                 }
                                 STATE_GATE_A_STANDBY -> {
                                     // change state
-                                    if (SystemClock.elapsedRealtime() - time > DELAY_STANDBY + enemyDelay) {
+                                    if (SystemClock.elapsedRealtime() - time > THRESHOLD_STANDBY + enemyDelay) {
                                         state = STATE_GATE_A_DUEL
                                         turn = 0
                                     } else {

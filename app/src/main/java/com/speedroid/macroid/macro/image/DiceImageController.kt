@@ -37,11 +37,7 @@ class DiceImageController : BaseImageController() {
         croppedBitmap.recycle()
 
         // detect
-        val distance = computeDistanceAverage(difficultyDrawablePixels, croppedPixels)
-
-        // check threshold
-        if (distance > THRESHOLD_DISTANCE)
-            return null
+        computeDistanceAverage(difficultyDrawablePixels, croppedPixels) ?: return null
 
         // initialize click point
         val clickPoint = Point(1080 * 3 / 4, IMAGE_HEIGHT_SMALL / 2 + y)
@@ -60,11 +56,7 @@ class DiceImageController : BaseImageController() {
         croppedBitmap.recycle()
 
         // detect
-        val distance = computeDistanceAverage(moveDrawablePixels, croppedPixels)
-
-        // check threshold
-        if (distance > THRESHOLD_DISTANCE)
-            return null
+        computeDistanceAverage(moveDrawablePixels, croppedPixels) ?: return null
 
         // initialize click point
         val clickPoint = Point(1080 * 3 / 4, IMAGE_HEIGHT_LARGE + y)

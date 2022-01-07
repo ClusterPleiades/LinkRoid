@@ -3,13 +3,9 @@ package com.speedroid.macroid.macro.mode
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.SystemClock
-import android.util.Log
 import com.speedroid.macroid.Configs.Companion.DELAY_DEFAULT
 import com.speedroid.macroid.Configs.Companion.DELAY_DOUBLE
-import com.speedroid.macroid.Configs.Companion.DELAY_ENEMY
-import com.speedroid.macroid.Configs.Companion.DELAY_ENEMY_DEFAULT
 import com.speedroid.macroid.Configs.Companion.DELAY_LONG
-import com.speedroid.macroid.Configs.Companion.DELAY_VERY_LONG
 import com.speedroid.macroid.Configs.Companion.DURATION_DRAG
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_D
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_D_CONV
@@ -19,15 +15,12 @@ import com.speedroid.macroid.Configs.Companion.STATE_GATE_D_STANDBY
 import com.speedroid.macroid.Configs.Companion.DELAY_DRAW
 import com.speedroid.macroid.Configs.Companion.DELAY_STANDBY
 import com.speedroid.macroid.Configs.Companion.DURATION_CLICK
-import com.speedroid.macroid.Configs.Companion.STATE_GATE_A_END
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_D_DUEL
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_D_END
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_D_FINISH
 import com.speedroid.macroid.Configs.Companion.X_CENTER
-import com.speedroid.macroid.Configs.Companion.X_MONSTER_RIGHT
 import com.speedroid.macroid.Configs.Companion.X_PHASE
 import com.speedroid.macroid.Configs.Companion.X_SET
-import com.speedroid.macroid.Configs.Companion.X_SUMMON
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_HAND
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_MONSTER
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_PHASE
@@ -38,14 +31,12 @@ import com.speedroid.macroid.macro.image.BaseImageController
 import com.speedroid.macroid.service.ProjectionService
 
 class GateDMode : BaseMode() {
-    private val enemyDelay = prefs.getLong(DELAY_ENEMY, DELAY_ENEMY_DEFAULT)
     private val imageController: BaseImageController = BaseImageController()
     private val duelRunnableArrayList: ArrayList<Runnable> = ArrayList()
 
     private var state = STATE_GATE_D
-    private var time = 0L
-    private var turn = 0
     private var backupClickPoint: Point? = null
+    private var turnCount = 0
 
     init {
         initializeMainRunnable()
@@ -70,7 +61,6 @@ class GateDMode : BaseMode() {
                         if (detectResult == null) runMainLogic(scaledBitmap)
                         else {
                             click(detectResult.clickPoint)
-                            time = SystemClock.elapsedRealtime()
                             macroHandler!!.postDelayed(this, DELAY_DEFAULT)
                         }
                     }
@@ -131,21 +121,22 @@ class GateDMode : BaseMode() {
             }
             STATE_GATE_D_START -> {
                 state = STATE_GATE_D_DUEL
-                turn = 1
+                turnCount = 1
                 macroHandler!!.postDelayed(mainRunnable, DELAY_STANDBY)
             }
             STATE_GATE_D_DUEL -> {
-                var detectResult = imageController.detectImage(bitmap, R.drawable.image_button_win)
+                var detectResult = if (turnCount > 1) imageController.detectImage(bitmap, R.drawable.image_button_win) else null
                 if (detectResult == null) {
-                    detectResult = imageController.detectImage(bitmap, R.drawable.image_button_draw)
-                    if (detectResult == null) {
-                        click(Point(X_CENTER, screenHeight / 2))
-                        macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
-                    } else {
-                        click(Point(X_CENTER, screenHeight / 2))
-                        time = SystemClock.elapsedRealtime()
-                        macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
-                    }
+                    detectResult = imageController.detectTurnImage(bitmap)
+//                    detectResult = imageController.detectImage(bitmap, R.drawable.image_button_draw)
+//                    if (detectResult == null) {
+//                        click(Point(X_CENTER, screenHeight / 2))
+//                        macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
+//                    } else {
+//                        click(Point(X_CENTER, screenHeight / 2))
+//                        time = SystemClock.elapsedRealtime()
+//                        macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
+//                    }
                 } else {
                     click(detectResult.clickPoint)
                     backupClickPoint = detectResult.clickPoint
@@ -174,13 +165,13 @@ class GateDMode : BaseMode() {
     private fun initializeDuelRunnableArrayList() {
         // index 0: draw
         Runnable {
-            if (SystemClock.elapsedRealtime() - time < DELAY_DRAW) {
-                click(Point(X_CENTER, screenHeight / 2))
-                macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
-            } else {
-                if (turn > 3 && turn % 2 == 0) macroHandler!!.postDelayed(duelRunnableArrayList[5], DELAY_DEFAULT)
-                else macroHandler!!.postDelayed(duelRunnableArrayList[1], DELAY_DEFAULT)
-            }
+//            if (SystemClock.elapsedRealtime() - time < DELAY_DRAW) {
+//                click(Point(X_CENTER, screenHeight / 2))
+//                macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
+//            } else {
+//                if (turnCount > 3 && turnCount % 2 == 0) macroHandler!!.postDelayed(duelRunnableArrayList[5], DELAY_DEFAULT)
+//                else macroHandler!!.postDelayed(duelRunnableArrayList[1], DELAY_DEFAULT)
+//            }
         }.also { duelRunnableArrayList.add(it) }
 
         // index 1: drag monster
@@ -204,8 +195,8 @@ class GateDMode : BaseMode() {
         // index 4: click phase (end)
         Runnable {
             click(Point(X_PHASE, screenHeight - Y_FROM_BOTTOM_PHASE_HIGH))
-            turn++
-            macroHandler!!.postDelayed(mainRunnable, enemyDelay)
+            turnCount++
+            macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
         }.also { duelRunnableArrayList.add(it) }
 
         // case exception

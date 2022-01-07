@@ -44,10 +44,11 @@ class GateAImageController : BaseImageController() {
         var indexOfMin = 0
         for (i in bottomDrawablePixelsArray.indices) {
             val distance = computeDistanceAverage(bottomDrawablePixelsArray[i]!!, croppedPixels)
-            if (distance < minDistance) {
-                minDistance = distance
-                indexOfMin = i
-            }
+            if (distance != null)
+                if (distance < minDistance) {
+                    minDistance = distance
+                    indexOfMin = i
+                }
         }
 
         // check distance
@@ -80,10 +81,11 @@ class GateAImageController : BaseImageController() {
         var indexOfMin = 0
         for (i in exceptionDrawablePixelsArray.indices) {
             val distance = computeDistanceAverage(exceptionDrawablePixelsArray[i]!!, croppedPixels)
-            if (distance < minDistance) {
-                minDistance = distance
-                indexOfMin = i
-            }
+            if (distance != null)
+                if (distance < minDistance) {
+                    minDistance = distance
+                    indexOfMin = i
+                }
         }
 
         // check distance

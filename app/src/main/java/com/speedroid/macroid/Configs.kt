@@ -46,8 +46,9 @@ class Configs {
         const val DELAY_SPONGEBOB = 5000L
 
         const val DELAY_DRAW = 2000L
-        const val DELAY_STANDBY = 14000L
+        const val DELAY_STANDBY = 10000L
 
+        const val THRESHOLD_STANDBY = 14000L
         const val THRESHOLD_DISTANCE = 3000000L
 
         const val DURATION_DRAG = 250L
@@ -85,8 +86,6 @@ class Configs {
         const val Y_FROM_BOTTOM_PHASE = 700
         const val Y_FROM_BOTTOM_PHASE_HIGH = 1040
         const val Y_FROM_BOTTOM_MONSTER = 1020
-
-        // 1080 290
-        // 1080 800
+        const val Y_FROM_BOTTOM_DECK = 850 // 2400 - 1550
     }
 }
