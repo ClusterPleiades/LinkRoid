@@ -127,16 +127,12 @@ class GateDMode : BaseMode() {
             STATE_GATE_D_DUEL -> {
                 var detectResult = if (turnCount > 1) imageController.detectImage(bitmap, R.drawable.image_button_win) else null
                 if (detectResult == null) {
-                    detectResult = imageController.detectTurnImage(bitmap)
-//                    detectResult = imageController.detectImage(bitmap, R.drawable.image_button_draw)
-//                    if (detectResult == null) {
-//                        click(Point(X_CENTER, screenHeight / 2))
-//                        macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
-//                    } else {
-//                        click(Point(X_CENTER, screenHeight / 2))
-//                        time = SystemClock.elapsedRealtime()
-//                        macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
-//                    }
+                    detectResult = imageController.detectDeckImage(bitmap)
+                    when (detectResult.drawableResId) {
+                        R.drawable.image_background_player -> macroHandler!!.postDelayed(duelRunnableArrayList[1], DELAY_DEFAULT)
+                        R.drawable.image_background_enemy,
+                        R.drawable.image_background_draw -> macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
+                    }
                 } else {
                     click(detectResult.clickPoint)
                     backupClickPoint = detectResult.clickPoint
@@ -165,13 +161,27 @@ class GateDMode : BaseMode() {
     private fun initializeDuelRunnableArrayList() {
         // index 0: draw
         Runnable {
-//            if (SystemClock.elapsedRealtime() - time < DELAY_DRAW) {
-//                click(Point(X_CENTER, screenHeight / 2))
-//                macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
-//            } else {
-//                if (turnCount > 3 && turnCount % 2 == 0) macroHandler!!.postDelayed(duelRunnableArrayList[5], DELAY_DEFAULT)
-//                else macroHandler!!.postDelayed(duelRunnableArrayList[1], DELAY_DEFAULT)
-//            }
+            click(Point(X_CENTER, screenHeight / 2))
+
+            val screenBitmap = ProjectionService.getScreenProjection()
+            if (screenBitmap == null) macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
+            else {
+                val scaledBitmap = if (screenBitmap.width == screenWidth) screenBitmap
+                else Bitmap.createScaledBitmap(screenBitmap, screenWidth, screenHeight, true)
+
+                val detectResult = imageController.detectDeckImage(scaledBitmap)
+                when (detectResult.drawableResId) {
+                    R.drawable.image_background_player -> {
+                        if (turnCount > 3 && turnCount % 2 == 0) macroHandler!!.postDelayed(duelRunnableArrayList[5], DELAY_DEFAULT)
+                        else macroHandler!!.postDelayed(duelRunnableArrayList[1], DELAY_DEFAULT)
+                    }
+                    R.drawable.image_background_enemy,
+                    R.drawable.image_background_draw -> macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
+                }
+
+                scaledBitmap.recycle()
+                screenBitmap.recycle()
+            }
         }.also { duelRunnableArrayList.add(it) }
 
         // index 1: drag monster
@@ -196,7 +206,7 @@ class GateDMode : BaseMode() {
         Runnable {
             click(Point(X_PHASE, screenHeight - Y_FROM_BOTTOM_PHASE_HIGH))
             turnCount++
-            macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
+            macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
         }.also { duelRunnableArrayList.add(it) }
 
         // case exception

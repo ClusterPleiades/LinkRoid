@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat
 import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT_LARGE
 import com.speedroid.macroid.Configs.Companion.IMAGE_HEIGHT_SMALL
 import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
-import com.speedroid.macroid.Configs.Companion.THRESHOLD_DISTANCE
 import com.speedroid.macroid.R
 import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 
@@ -37,7 +36,7 @@ class DiceImageController : BaseImageController() {
         croppedBitmap.recycle()
 
         // detect
-        computeDistanceAverage(difficultyDrawablePixels, croppedPixels) ?: return null
+        getDistanceAverage(difficultyDrawablePixels, croppedPixels) ?: return null
 
         // initialize click point
         val clickPoint = Point(1080 * 3 / 4, IMAGE_HEIGHT_SMALL / 2 + y)
@@ -56,7 +55,7 @@ class DiceImageController : BaseImageController() {
         croppedBitmap.recycle()
 
         // detect
-        computeDistanceAverage(moveDrawablePixels, croppedPixels) ?: return null
+        getDistanceAverage(moveDrawablePixels, croppedPixels) ?: return null
 
         // initialize click point
         val clickPoint = Point(1080 * 3 / 4, IMAGE_HEIGHT_LARGE + y)

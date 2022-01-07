@@ -18,8 +18,13 @@ class GateAImageController : BaseImageController() {
         R.drawable.image_button_appear
     )
 
-    private val bottomDrawablePixelsArray: Array<IntArray?> = arrayOf(gateDrawablePixels, convDrawablePixels, backDrawablePixels)
-    private val exceptionDrawablePixelsArray: Array<IntArray?> = arrayOf(appearDrawablePixels)
+    private var bottomDrawablePixelsArray: Array<IntArray?> = arrayOfNulls(bottomDrawableResIdArray.size)
+    private var exceptionDrawablePixelsArray: Array<IntArray?> = arrayOfNulls(exceptionDrawableResIdArray.size)
+
+    init {
+        for (i in bottomDrawableResIdArray.indices) bottomDrawablePixelsArray[i] = pixelsHashMap[bottomDrawableResIdArray[i]]
+        for (i in exceptionDrawableResIdArray.indices) exceptionDrawablePixelsArray[i] = pixelsHashMap[exceptionDrawableResIdArray[i]]
+    }
 
     fun detectImage(screenBitmap: Bitmap): DetectResult? {
         // detect
@@ -43,7 +48,7 @@ class GateAImageController : BaseImageController() {
         var minDistance = Long.MAX_VALUE
         var indexOfMin = 0
         for (i in bottomDrawablePixelsArray.indices) {
-            val distance = computeDistanceAverage(bottomDrawablePixelsArray[i]!!, croppedPixels)
+            val distance = getDistanceAverage(bottomDrawablePixelsArray[i]!!, croppedPixels)
             if (distance != null)
                 if (distance < minDistance) {
                     minDistance = distance
@@ -80,7 +85,7 @@ class GateAImageController : BaseImageController() {
         var minDistance = Long.MAX_VALUE
         var indexOfMin = 0
         for (i in exceptionDrawablePixelsArray.indices) {
-            val distance = computeDistanceAverage(exceptionDrawablePixelsArray[i]!!, croppedPixels)
+            val distance = getDistanceAverage(exceptionDrawablePixelsArray[i]!!, croppedPixels)
             if (distance != null)
                 if (distance < minDistance) {
                     minDistance = distance
