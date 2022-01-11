@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="array_mode">
-        <item>게이트 (공격)</item>
-        <item>게이트 (수비)</item>
-        <item>주사위</item>
+        <item>게이트 (수)</item>
         <item>서비스 중지</item>
     </string-array>
 

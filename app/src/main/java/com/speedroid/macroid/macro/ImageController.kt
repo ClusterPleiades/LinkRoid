@@ -1,4 +1,4 @@
-package com.speedroid.macroid.macro.image
+package com.speedroid.macroid.macro
 
 import android.graphics.Bitmap
 import android.graphics.Point
@@ -6,7 +6,8 @@ import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
-import com.speedroid.macroid.Configs.Companion.THRESHOLD_DISTANCE
+import com.speedroid.macroid.Configs.Companion.THRESHOLD_DISTANCE_DEFAULT
+import com.speedroid.macroid.Configs.Companion.THRESHOLD_DISTANCE_STRICT
 import com.speedroid.macroid.Configs.Companion.X_PHASE
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_DECK
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_PHASE
@@ -15,19 +16,21 @@ import com.speedroid.macroid.R
 import com.speedroid.macroid.ui.activity.ModeActivity.Companion.preservedContext
 import kotlin.math.abs
 
-open class BaseImageController {
-    private val deviceController: DeviceController = DeviceController(preservedContext)
-    val screenHeight = deviceController.getHeightMax()
+open class ImageController {
+    private val screenHeight = DeviceController(preservedContext).getHeightMax()
 
     // hash map of drawable resource id
-    val pixelsHashMap = HashMap<Int, IntArray>()
+    private val pixelsHashMap = HashMap<Int, IntArray>()
     private val heightHashMap = HashMap<Int, Int>()
     private val yHashMap = HashMap<Int, Int>()
     val clickPointHashMap = HashMap<Int, Point>()
 
+    private val strictHashSet = HashSet<Int>()
+
     init {
         initializePhysicsHashMaps()
         initializeOptionHashMaps()
+        initializeHashSets()
     }
 
     private fun initializePhysicsHashMaps() {
@@ -146,6 +149,10 @@ open class BaseImageController {
             Point(X_PHASE, screenHeight - Y_FROM_BOTTOM_PHASE)
     }
 
+    private fun initializeHashSets() {
+        strictHashSet.add(R.drawable.image_button_win)
+    }
+
     private fun getCroppedPixels(screenBitmap: Bitmap, drawableResId: Int): IntArray? {
         val imageHeight = heightHashMap[drawableResId] ?: return null
         val imageY = yHashMap[drawableResId] ?: return null
@@ -171,21 +178,12 @@ open class BaseImageController {
         return distance / compareCount
     }
 
-    fun getDistanceAverageResult(drawablePixels: IntArray, screenPixels: IntArray): Long? {
-        val distanceAverage = getDistanceAverage(drawablePixels, screenPixels)
-        return if (distanceAverage > THRESHOLD_DISTANCE) null
-        else distanceAverage
-    }
-
     fun detectImage(screenBitmap: Bitmap, drawableResId: Int): DetectResult? {
         val imagePixels = pixelsHashMap[drawableResId] ?: return null
         val croppedPixels = getCroppedPixels(screenBitmap, drawableResId) ?: return null
-        val distance = getDistanceAverageResult(imagePixels, croppedPixels) ?: return null
+        val threshold = if (strictHashSet.contains(drawableResId)) THRESHOLD_DISTANCE_STRICT else THRESHOLD_DISTANCE_DEFAULT
 
-        if(drawableResId == R.drawable.image_button_win)
-            Log.d("test", "win distance $distance")
-
-        return DetectResult(drawableResId)
+        return if (getDistanceAverage(imagePixels, croppedPixels) > threshold) null else DetectResult(drawableResId)
     }
 
     fun detectRetryImage(screenBitmap: Bitmap): DetectResult? {
@@ -223,18 +221,7 @@ open class BaseImageController {
         return DetectResult(drawableResId)
     }
 
-    inner class DetectResult {
-        val drawableResId: Int
-        val clickPoint: Point?
-
-        constructor(drawableResId: Int) {
-            this.drawableResId = drawableResId
-            clickPoint = clickPointHashMap[drawableResId]
-        }
-
-        constructor(drawableResId: Int, clickPoint: Point?) {
-            this.drawableResId = drawableResId
-            this.clickPoint = clickPoint
-        }
+    inner class DetectResult(val drawableResId: Int) {
+        val clickPoint: Point? = clickPointHashMap[drawableResId]
     }
 }

@@ -15,12 +15,12 @@ abstract class BaseMode {
         var macroHandler: Handler? = null
     }
 
-    private val deviceController: DeviceController = DeviceController(preservedContext)
-    val prefs: SharedPreferences = preservedContext.getSharedPreferences(Configs.PREFS, AppCompatActivity.MODE_PRIVATE)
-    val screenWidth = deviceController.getWidthMax()
-    val screenHeight = deviceController.getHeightMax()
+    val screenWidth = DeviceController(preservedContext).getWidthMax()
+    val screenHeight = DeviceController(preservedContext).getHeightMax()
 
-    open lateinit var mainRunnable: Runnable
+    lateinit var mainRunnable: Runnable
+    var backupClickPoint: Point? = null
+    var state = 0
 
     init {
         // initialize handler
