@@ -70,7 +70,7 @@ class GateMode : BaseMode() {
     private fun runMainLogic(bitmap: Bitmap) {
         when (state) {
             STATE_GATE -> {
-                var detectResult = imageController.detectImage(bitmap, R.drawable.image_button_appear)
+                var detectResult = imageController.detectAppearImage(bitmap)
                 if (detectResult == null) {
                     detectResult = imageController.detectImage(bitmap, R.drawable.image_button_gate)
                     if (detectResult == null) click(imageController.clickPointHashMap[R.drawable.image_button_gate])

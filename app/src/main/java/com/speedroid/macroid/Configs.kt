@@ -11,9 +11,6 @@ class Configs {
         const val DIALOG_POSITION_GATE = 0
         const val DIALOG_POSITION_STOP = 1
 
-        // setting
-        const val SETTING_POSITION_TIME_OPPONENT = 0
-
         // notification
         const val NOTIFICATION_ID = 1000
 

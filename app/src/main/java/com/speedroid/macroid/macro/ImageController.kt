@@ -3,7 +3,6 @@ package com.speedroid.macroid.macro
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
-import android.util.Log
 import androidx.core.content.ContextCompat
 import com.speedroid.macroid.Configs.Companion.IMAGE_WIDTH
 import com.speedroid.macroid.Configs.Companion.THRESHOLD_DISTANCE_DEFAULT
@@ -44,7 +43,8 @@ open class ImageController {
         val backBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_back) as BitmapDrawable).bitmap
         val convBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_background_conv) as BitmapDrawable).bitmap
         val gateBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_gate) as BitmapDrawable).bitmap
-        val appearBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_appear) as BitmapDrawable).bitmap
+        val appear1Bitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_appear_1) as BitmapDrawable).bitmap
+        val appear2Bitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_appear_2) as BitmapDrawable).bitmap
 
         val playerPixelArray = IntArray(playerBitmap.width * playerBitmap.height)
         val enemyPixelArray = IntArray(enemyBitmap.width * enemyBitmap.height)
@@ -56,7 +56,8 @@ open class ImageController {
         val backPixelArray = IntArray(backBitmap.width * backBitmap.height)
         val convPixelArray = IntArray(convBitmap.width * convBitmap.height)
         val gatePixelArray = IntArray(gateBitmap.width * gateBitmap.height)
-        val appearPixelArray = IntArray(appearBitmap.width * appearBitmap.height)
+        val appear1PixelArray = IntArray(appear1Bitmap.width * appear1Bitmap.height)
+        val appear2PixelArray = IntArray(appear1Bitmap.width * appear2Bitmap.height)
 
         playerBitmap.getPixels(playerPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, playerBitmap.height)
         enemyBitmap.getPixels(enemyPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, enemyBitmap.height)
@@ -68,7 +69,8 @@ open class ImageController {
         backBitmap.getPixels(backPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, backBitmap.height)
         convBitmap.getPixels(convPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, convBitmap.height)
         gateBitmap.getPixels(gatePixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, gateBitmap.height)
-        appearBitmap.getPixels(appearPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, appearBitmap.height)
+        appear1Bitmap.getPixels(appear1PixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, appear1Bitmap.height)
+        appear2Bitmap.getPixels(appear2PixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, appear2Bitmap.height)
 
         pixelsHashMap[R.drawable.image_background_player] = playerPixelArray
         pixelsHashMap[R.drawable.image_background_enemy] = enemyPixelArray
@@ -80,7 +82,8 @@ open class ImageController {
         pixelsHashMap[R.drawable.image_button_back] = backPixelArray
         pixelsHashMap[R.drawable.image_background_conv] = convPixelArray
         pixelsHashMap[R.drawable.image_button_gate] = gatePixelArray
-        pixelsHashMap[R.drawable.image_button_appear] = appearPixelArray
+        pixelsHashMap[R.drawable.image_button_appear_1] = appear1PixelArray
+        pixelsHashMap[R.drawable.image_button_appear_2] = appear2PixelArray
 
         heightHashMap[R.drawable.image_background_player] = playerBitmap.height
         heightHashMap[R.drawable.image_background_enemy] = enemyBitmap.height
@@ -92,7 +95,8 @@ open class ImageController {
         heightHashMap[R.drawable.image_button_back] = backBitmap.height
         heightHashMap[R.drawable.image_background_conv] = convBitmap.height
         heightHashMap[R.drawable.image_button_gate] = gateBitmap.height
-        heightHashMap[R.drawable.image_button_appear] = appearBitmap.height
+        heightHashMap[R.drawable.image_button_appear_1] = appear1Bitmap.height
+        heightHashMap[R.drawable.image_button_appear_2] = appear2Bitmap.height
 
         playerBitmap.recycle()
         enemyBitmap.recycle()
@@ -104,12 +108,14 @@ open class ImageController {
         backBitmap.recycle()
         convBitmap.recycle()
         gateBitmap.recycle()
-        appearBitmap.recycle()
+        appear1Bitmap.recycle()
+        appear2Bitmap.recycle()
     }
 
     private fun initializeOptionHashMaps() {
         // case center
-        yHashMap[R.drawable.image_button_appear] = (screenHeight - heightHashMap[R.drawable.image_button_appear]!!) / 2
+        yHashMap[R.drawable.image_button_appear_1] = (screenHeight - heightHashMap[R.drawable.image_button_appear_1]!!) / 2
+        yHashMap[R.drawable.image_button_appear_2] = (screenHeight - heightHashMap[R.drawable.image_button_appear_1]!!) / 2
         yHashMap[R.drawable.image_button_retry_l] = (screenHeight - heightHashMap[R.drawable.image_button_retry_l]!!) / 2
         yHashMap[R.drawable.image_button_retry_s] = (screenHeight - heightHashMap[R.drawable.image_button_retry_s]!!) / 2
 
@@ -125,8 +131,10 @@ open class ImageController {
         yHashMap[R.drawable.image_background_draw_1] = screenHeight - Y_FROM_BOTTOM_DECK
         yHashMap[R.drawable.image_background_draw_2] = screenHeight - Y_FROM_BOTTOM_DECK
 
-        clickPointHashMap[R.drawable.image_button_appear] =
-            Point(1080 / 4, yHashMap[R.drawable.image_button_appear]!! + heightHashMap[R.drawable.image_button_appear]!! / 10 * 9)
+        clickPointHashMap[R.drawable.image_button_appear_1] =
+            Point(1080 / 4, yHashMap[R.drawable.image_button_appear_1]!! + heightHashMap[R.drawable.image_button_appear_1]!! / 10 * 9)
+        clickPointHashMap[R.drawable.image_button_appear_2] =
+            Point(1080 / 4, yHashMap[R.drawable.image_button_appear_2]!! + heightHashMap[R.drawable.image_button_appear_2]!! / 10 * 9)
         clickPointHashMap[R.drawable.image_button_retry_l] =
             Point(1080 / 4 * 3, yHashMap[R.drawable.image_button_retry_l]!! + heightHashMap[R.drawable.image_button_retry_l]!! / 8 * 7)
         clickPointHashMap[R.drawable.image_button_retry_s] =
@@ -190,6 +198,12 @@ open class ImageController {
         val smallRetryDetectResult = detectImage(screenBitmap, R.drawable.image_button_retry_s)
         val largeRetryDetectResult = detectImage(screenBitmap, R.drawable.image_button_retry_l)
         return smallRetryDetectResult ?: largeRetryDetectResult
+    }
+
+    fun detectAppearImage(screenBitmap: Bitmap): DetectResult? {
+        val appear1DetectResult = detectImage(screenBitmap, R.drawable.image_button_appear_1)
+        val appear2DetectResult = detectImage(screenBitmap, R.drawable.image_button_appear_2)
+        return appear1DetectResult ?: appear2DetectResult
     }
 
     fun detectDeckImage(screenBitmap: Bitmap): DetectResult {
