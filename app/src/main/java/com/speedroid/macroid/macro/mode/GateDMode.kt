@@ -2,18 +2,14 @@ package com.speedroid.macroid.macro.mode
 
 import android.graphics.Bitmap
 import android.graphics.Point
-import android.os.SystemClock
-import android.util.Log
 import com.speedroid.macroid.Configs.Companion.DELAY_DEFAULT
 import com.speedroid.macroid.Configs.Companion.DELAY_DOUBLE
-import com.speedroid.macroid.Configs.Companion.DELAY_LONG
 import com.speedroid.macroid.Configs.Companion.DURATION_DRAG
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_D
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_D_CONV
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_D_START
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_D_READY
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_D_STANDBY
-import com.speedroid.macroid.Configs.Companion.DELAY_DRAW
 import com.speedroid.macroid.Configs.Companion.DELAY_STANDBY
 import com.speedroid.macroid.Configs.Companion.DURATION_CLICK
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_D_DUEL
@@ -25,7 +21,6 @@ import com.speedroid.macroid.Configs.Companion.X_SET
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_HAND
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_MONSTER
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_PHASE
-import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_PHASE_HIGH
 import com.speedroid.macroid.Configs.Companion.Y_FROM_BOTTOM_SUMMON
 import com.speedroid.macroid.R
 import com.speedroid.macroid.macro.image.BaseImageController
@@ -79,16 +74,13 @@ class GateDMode : BaseMode() {
                 var detectResult = imageController.detectImage(bitmap, R.drawable.image_button_appear)
                 if (detectResult == null) {
                     detectResult = imageController.detectImage(bitmap, R.drawable.image_button_gate)
-                    if (detectResult == null) macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
+                    if (detectResult == null) click(imageController.clickPointHashMap[R.drawable.image_button_gate])
                     else {
                         click(detectResult.clickPoint)
                         state = STATE_GATE_D_READY
-                        macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
                     }
-                } else {
-                    click(detectResult.clickPoint)
-                    macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
-                }
+                } else click(detectResult.clickPoint)
+                macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
             }
             STATE_GATE_D_READY -> {
                 val detectResult = imageController.detectImage(bitmap, R.drawable.image_button_back)
@@ -126,20 +118,7 @@ class GateDMode : BaseMode() {
                 macroHandler!!.postDelayed(mainRunnable, DELAY_STANDBY)
             }
             STATE_GATE_D_DUEL -> {
-                var detectResult = if (turnCount > 1) imageController.detectImage(bitmap, R.drawable.image_button_win) else null
-                if (detectResult == null) {
-                    detectResult = imageController.detectDeckImage(bitmap)
-                    when (detectResult.drawableResId) {
-                        R.drawable.image_background_player -> macroHandler!!.postDelayed(duelRunnableArrayList[1], DELAY_DEFAULT)
-                        R.drawable.image_background_enemy,
-                        R.drawable.image_background_draw -> macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
-                    }
-                } else {
-                    click(detectResult.clickPoint)
-                    backupClickPoint = detectResult.clickPoint
-                    state = STATE_GATE_D_END
-                    macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
-                }
+                macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
             }
             STATE_GATE_D_END -> {
                 val detectResult = imageController.detectImage(bitmap, R.drawable.image_background_conv)
@@ -175,18 +154,12 @@ class GateDMode : BaseMode() {
                     detectResult = imageController.detectDeckImage(scaledBitmap)
                     when (detectResult.drawableResId) {
                         R.drawable.image_background_player -> {
-                            Log.d("test", "detect player")
                             if (turnCount > 3 && turnCount % 2 == 0) macroHandler!!.postDelayed(duelRunnableArrayList[7], DELAY_DEFAULT)
                             else macroHandler!!.postDelayed(duelRunnableArrayList[1], DELAY_DEFAULT)
                         }
-                        R.drawable.image_background_enemy -> {
-                            Log.d("test", "detect enemy")
-                            macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
-                        }
-                        R.drawable.image_background_draw -> {
-                            Log.d("test", "detect draw")
-                            macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
-                        }
+                        R.drawable.image_background_enemy,
+                        R.drawable.image_background_draw_1,
+                        R.drawable.image_background_draw_2 -> macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
                     }
                 } else {
                     click(detectResult.clickPoint)
@@ -203,7 +176,7 @@ class GateDMode : BaseMode() {
         // index 1: drag monster
         Runnable {
             drag(Point(X_CENTER, screenHeight - Y_FROM_BOTTOM_HAND))
-            macroHandler!!.postDelayed(duelRunnableArrayList[2], DELAY_DEFAULT + DURATION_DRAG)
+            macroHandler!!.postDelayed(duelRunnableArrayList[2], 2 * DURATION_DRAG)
         }.also { duelRunnableArrayList.add(it) }
 
         // index 2: set monster

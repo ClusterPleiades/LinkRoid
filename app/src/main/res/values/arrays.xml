@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="array_mode">
-        <item>Gate (attack)</item>
-        <item>Gate (defense)</item>
+        <item>Gate (ATK)</item>
+        <item>Gate (DEF)</item>
         <item>Dice</item>
         <item>Stop Service</item>
     </string-array>
