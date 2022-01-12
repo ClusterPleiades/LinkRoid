@@ -41,7 +41,6 @@ class Configs {
         const val STATE_GATE_CONV = 2
         const val STATE_GATE_STANDBY = 3
         const val STATE_GATE_START = 4
-        const val STATE_GATE_DUEL = 5
         const val STATE_GATE_END = 6
         const val STATE_GATE_FINISH = 7
 

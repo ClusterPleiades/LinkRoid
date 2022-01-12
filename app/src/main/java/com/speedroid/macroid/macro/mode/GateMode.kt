@@ -4,17 +4,16 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import com.speedroid.macroid.Configs.Companion.DELAY_DEFAULT
 import com.speedroid.macroid.Configs.Companion.DELAY_DOUBLE
+import com.speedroid.macroid.Configs.Companion.DELAY_STANDBY
+import com.speedroid.macroid.Configs.Companion.DURATION_CLICK
 import com.speedroid.macroid.Configs.Companion.DURATION_DRAG
 import com.speedroid.macroid.Configs.Companion.STATE_GATE
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_CONV
-import com.speedroid.macroid.Configs.Companion.STATE_GATE_START
-import com.speedroid.macroid.Configs.Companion.STATE_GATE_READY
-import com.speedroid.macroid.Configs.Companion.STATE_GATE_STANDBY
-import com.speedroid.macroid.Configs.Companion.DELAY_STANDBY
-import com.speedroid.macroid.Configs.Companion.DURATION_CLICK
-import com.speedroid.macroid.Configs.Companion.STATE_GATE_DUEL
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_END
 import com.speedroid.macroid.Configs.Companion.STATE_GATE_FINISH
+import com.speedroid.macroid.Configs.Companion.STATE_GATE_READY
+import com.speedroid.macroid.Configs.Companion.STATE_GATE_STANDBY
+import com.speedroid.macroid.Configs.Companion.STATE_GATE_START
 import com.speedroid.macroid.Configs.Companion.X_CENTER
 import com.speedroid.macroid.Configs.Companion.X_PHASE
 import com.speedroid.macroid.Configs.Companion.X_SET
@@ -82,9 +81,16 @@ class GateMode : BaseMode() {
                 macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
             }
             STATE_GATE_READY -> {
-                val detectResult = imageController.detectImage(bitmap, R.drawable.image_button_back)
-                if (detectResult == null) macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
-                else {
+                var detectResult = imageController.detectImage(bitmap, R.drawable.image_button_back)
+                if (detectResult == null) {
+                    detectResult = imageController.detectImage(bitmap, R.drawable.image_button_gate)
+                    if (detectResult == null) macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
+                    else {
+                        click(detectResult.clickPoint)
+                        state = STATE_GATE_READY
+                        macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
+                    }
+                } else {
                     click(detectResult.clickPoint)
                     state = STATE_GATE_CONV
                     macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
@@ -102,31 +108,31 @@ class GateMode : BaseMode() {
             }
             STATE_GATE_STANDBY -> {
                 val detectResult = imageController.detectImage(bitmap, R.drawable.image_button_back)
-                if (detectResult == null) {
-                    click(backupClickPoint)
-                    macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
-                } else {
-                    click(detectResult.clickPoint)
-                    state = STATE_GATE_START
-                    macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
-                }
-            }
-            STATE_GATE_START -> {
-                state = STATE_GATE_DUEL
-                turnCount = 1
-                macroHandler!!.postDelayed(mainRunnable, DELAY_STANDBY)
-            }
-            STATE_GATE_DUEL -> {
-                macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
-            }
-            STATE_GATE_END -> {
-                val detectResult = imageController.detectImage(bitmap, R.drawable.image_background_conv)
                 if (detectResult == null) click(backupClickPoint)
                 else {
                     click(detectResult.clickPoint)
-                    state = STATE_GATE_FINISH
+                    state = STATE_GATE_START
                 }
-                macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
+                macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
+            }
+            STATE_GATE_START -> {
+                turnCount = 1
+                macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_STANDBY)
+            }
+            STATE_GATE_END -> {
+                var detectResult = imageController.detectImage(bitmap, R.drawable.image_button_double)
+                if (detectResult == null) {
+                    detectResult = imageController.detectImage(bitmap, R.drawable.image_background_conv)
+                    if (detectResult == null) click(backupClickPoint)
+                    else {
+                        click(detectResult.clickPoint)
+                        state = STATE_GATE_FINISH
+                    }
+                    macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
+                } else {
+                    click(detectResult.clickPoint)
+                    macroHandler!!.postDelayed(mainRunnable, DELAY_DOUBLE)
+                }
             }
             STATE_GATE_FINISH -> {
                 val detectResult = imageController.detectImage(bitmap, R.drawable.image_background_conv)
@@ -156,9 +162,7 @@ class GateMode : BaseMode() {
                             if (turnCount > 3 && turnCount % 2 == 0) macroHandler!!.postDelayed(duelRunnableArrayList[7], DELAY_DEFAULT)
                             else macroHandler!!.postDelayed(duelRunnableArrayList[1], DELAY_DEFAULT)
                         }
-                        R.drawable.image_background_enemy,
-                        R.drawable.image_background_draw_1,
-                        R.drawable.image_background_draw_2 -> macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
+                        else -> macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
                     }
                 } else {
                     click(detectResult.clickPoint)
@@ -206,7 +210,7 @@ class GateMode : BaseMode() {
         Runnable {
             click(Point(X_PHASE, screenHeight - Y_FROM_BOTTOM_PHASE))
             turnCount++
-            macroHandler!!.postDelayed(mainRunnable, DELAY_DEFAULT)
+            macroHandler!!.postDelayed(duelRunnableArrayList[0], DELAY_DEFAULT)
         }.also { duelRunnableArrayList.add(it) }
 
         // case exception
