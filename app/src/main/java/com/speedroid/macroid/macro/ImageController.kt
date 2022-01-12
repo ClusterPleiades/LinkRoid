@@ -39,6 +39,7 @@ open class ImageController {
         val playerBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_background_player) as BitmapDrawable).bitmap
         val draw1Bitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_background_draw_1) as BitmapDrawable).bitmap
         val draw2Bitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_background_draw_2) as BitmapDrawable).bitmap
+        val enemyBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_background_enemy) as BitmapDrawable).bitmap
         val winBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_win) as BitmapDrawable).bitmap
         val largeRetryBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_retry_l) as BitmapDrawable).bitmap
         val smallRetryBitmap = (ContextCompat.getDrawable(preservedContext, R.drawable.image_button_retry_s) as BitmapDrawable).bitmap
@@ -52,6 +53,7 @@ open class ImageController {
         val playerPixelArray = IntArray(playerBitmap.width * playerBitmap.height)
         val draw1PixelArray = IntArray(draw1Bitmap.width * draw1Bitmap.height)
         val draw2PixelArray = IntArray(draw2Bitmap.width * draw2Bitmap.height)
+        val enemyPixelArray = IntArray(enemyBitmap.width * enemyBitmap.height)
         val winPixelArray = IntArray(winBitmap.width * winBitmap.height)
         val largeRetryPixelArray = IntArray(largeRetryBitmap.width * largeRetryBitmap.height)
         val smallRetryPixelArray = IntArray(smallRetryBitmap.width * smallRetryBitmap.height)
@@ -65,6 +67,7 @@ open class ImageController {
         playerBitmap.getPixels(playerPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, playerBitmap.height)
         draw1Bitmap.getPixels(draw1PixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, draw1Bitmap.height)
         draw2Bitmap.getPixels(draw2PixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, draw2Bitmap.height)
+        enemyBitmap.getPixels(enemyPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, enemyBitmap.height)
         winBitmap.getPixels(winPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, winBitmap.height)
         largeRetryBitmap.getPixels(largeRetryPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, largeRetryBitmap.height)
         smallRetryBitmap.getPixels(smallRetryPixelArray, 0, IMAGE_WIDTH, 0, 0, IMAGE_WIDTH, smallRetryBitmap.height)
@@ -78,6 +81,7 @@ open class ImageController {
         pixelsHashMap[R.drawable.image_background_player] = playerPixelArray
         pixelsHashMap[R.drawable.image_background_draw_1] = draw1PixelArray
         pixelsHashMap[R.drawable.image_background_draw_2] = draw2PixelArray
+        pixelsHashMap[R.drawable.image_background_enemy] = enemyPixelArray
         pixelsHashMap[R.drawable.image_button_win] = winPixelArray
         pixelsHashMap[R.drawable.image_button_retry_l] = largeRetryPixelArray
         pixelsHashMap[R.drawable.image_button_retry_s] = smallRetryPixelArray
@@ -91,6 +95,7 @@ open class ImageController {
         heightHashMap[R.drawable.image_background_player] = playerBitmap.height
         heightHashMap[R.drawable.image_background_draw_1] = draw1Bitmap.height
         heightHashMap[R.drawable.image_background_draw_2] = draw2Bitmap.height
+        heightHashMap[R.drawable.image_background_enemy] = enemyBitmap.height
         heightHashMap[R.drawable.image_button_win] = winBitmap.height
         heightHashMap[R.drawable.image_button_retry_l] = largeRetryBitmap.height
         heightHashMap[R.drawable.image_button_retry_s] = smallRetryBitmap.height
@@ -104,6 +109,7 @@ open class ImageController {
         playerBitmap.recycle()
         draw1Bitmap.recycle()
         draw2Bitmap.recycle()
+        enemyBitmap.recycle()
         winBitmap.recycle()
         largeRetryBitmap.recycle()
         smallRetryBitmap.recycle()
@@ -133,6 +139,7 @@ open class ImageController {
         yHashMap[R.drawable.image_background_player] = screenHeight - Y_FROM_BOTTOM_DECK
         yHashMap[R.drawable.image_background_draw_1] = screenHeight - Y_FROM_BOTTOM_DECK
         yHashMap[R.drawable.image_background_draw_2] = screenHeight - Y_FROM_BOTTOM_DECK
+        yHashMap[R.drawable.image_background_enemy] = screenHeight - Y_FROM_BOTTOM_DECK
 
         clickPointHashMap[R.drawable.image_button_appear_1] =
             Point(1080 / 4, yHashMap[R.drawable.image_button_appear_1]!! + heightHashMap[R.drawable.image_button_appear_1]!! / 10 * 9)
@@ -157,6 +164,8 @@ open class ImageController {
         clickPointHashMap[R.drawable.image_background_draw_1] =
             Point(X_PHASE, screenHeight - Y_FROM_BOTTOM_PHASE)
         clickPointHashMap[R.drawable.image_background_draw_2] =
+            Point(X_PHASE, screenHeight - Y_FROM_BOTTOM_PHASE)
+        clickPointHashMap[R.drawable.image_background_enemy] =
             Point(X_PHASE, screenHeight - Y_FROM_BOTTOM_PHASE)
     }
 
@@ -233,8 +242,7 @@ open class ImageController {
         val playerDistanceAverage = getDistanceAverage(pixelsHashMap[R.drawable.image_background_player]!!, croppedPixels)
         val draw1DistanceAverage = getDistanceAverage(pixelsHashMap[R.drawable.image_background_draw_1]!!, croppedPixels)
         val draw2DistanceAverage = getDistanceAverage(pixelsHashMap[R.drawable.image_background_draw_2]!!, croppedPixels)
-
-//        Log.d("test", "player,draw1,draw2 $playerDistanceAverage $draw1DistanceAverage $draw2DistanceAverage")
+        val enemyDistanceAverage = getDistanceAverage(pixelsHashMap[R.drawable.image_background_enemy]!!, croppedPixels)
 
         var minDistanceAverage = Long.MAX_VALUE
         var drawableResId = 0
@@ -248,7 +256,18 @@ open class ImageController {
             drawableResId = R.drawable.image_background_draw_1
         }
         if (draw2DistanceAverage < minDistanceAverage) {
+            minDistanceAverage = draw2DistanceAverage
             drawableResId = R.drawable.image_background_draw_2
+        }
+        if (enemyDistanceAverage < minDistanceAverage) {
+            drawableResId = R.drawable.image_background_enemy
+        }
+
+        when (drawableResId) {
+            R.drawable.image_background_player -> Log.d("test", "player $playerDistanceAverage")
+            R.drawable.image_background_draw_1 -> Log.d("test", "draw1 $draw1DistanceAverage")
+            R.drawable.image_background_draw_2 -> Log.d("test", "draw2 $draw2DistanceAverage")
+            R.drawable.image_background_enemy -> Log.d("test", "enemy $enemyDistanceAverage")
         }
 
         return DetectResult(drawableResId)
