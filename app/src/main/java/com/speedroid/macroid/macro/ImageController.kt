@@ -195,8 +195,25 @@ open class ImageController {
         val imagePixels = pixelsHashMap[drawableResId] ?: return null
         val croppedPixels = getCroppedPixels(screenBitmap, drawableResId) ?: return null
         val threshold = if (strictHashSet.contains(drawableResId)) THRESHOLD_DISTANCE_STRICT else THRESHOLD_DISTANCE_DEFAULT
+        val distanceAverage = getDistanceAverage(imagePixels, croppedPixels)
 
-        return if (getDistanceAverage(imagePixels, croppedPixels) > threshold) null else DetectResult(drawableResId)
+        return if (distanceAverage > threshold) null else {
+//            when (drawableResId) {
+//                R.drawable.image_background_player -> Log.d("test", "image_background_player $distanceAverage")
+//                R.drawable.image_background_draw_1 -> Log.d("test", "image_background_draw_1 $distanceAverage")
+//                R.drawable.image_background_draw_2 -> Log.d("test", "image_background_draw_2 $distanceAverage")
+//                R.drawable.image_button_win -> Log.d("test", "image_button_win $distanceAverage")
+//                R.drawable.image_button_retry_l -> Log.d("test", "image_button_retry_l $distanceAverage")
+//                R.drawable.image_button_retry_s -> Log.d("test", "image_button_retry_s $distanceAverage")
+//                R.drawable.image_button_back -> Log.d("test", "image_button_back $distanceAverage")
+//                R.drawable.image_button_gate -> Log.d("test", "image_button_gate $distanceAverage")
+//                R.drawable.image_button_appear_1 -> Log.d("test", "image_button_appear_1 $distanceAverage")
+//                R.drawable.image_button_appear_2 -> Log.d("test", "image_button_appear_2 $distanceAverage")
+//                R.drawable.image_button_double -> Log.d("test", "image_button_double $distanceAverage")
+//            }
+
+            DetectResult(drawableResId)
+        }
     }
 
     fun detectRetryImage(screenBitmap: Bitmap): DetectResult? {
@@ -217,7 +234,7 @@ open class ImageController {
         val draw1DistanceAverage = getDistanceAverage(pixelsHashMap[R.drawable.image_background_draw_1]!!, croppedPixels)
         val draw2DistanceAverage = getDistanceAverage(pixelsHashMap[R.drawable.image_background_draw_2]!!, croppedPixels)
 
-        Log.d("test", "player,draw1,draw2 $playerDistanceAverage $draw1DistanceAverage $draw2DistanceAverage")
+//        Log.d("test", "player,draw1,draw2 $playerDistanceAverage $draw1DistanceAverage $draw2DistanceAverage")
 
         var minDistanceAverage = Long.MAX_VALUE
         var drawableResId = 0

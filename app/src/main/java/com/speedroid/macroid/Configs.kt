@@ -30,8 +30,8 @@ class Configs {
         const val DELAY_DOUBLE = 1000L
         const val DELAY_STANDBY = 7000L
 
-        const val THRESHOLD_DISTANCE_DEFAULT = 3000000L
-        const val THRESHOLD_DISTANCE_STRICT = 1500000L
+        const val THRESHOLD_DISTANCE_DEFAULT = 150L
+        const val THRESHOLD_DISTANCE_STRICT = 100L
 
         const val DURATION_DRAG = 250L
         const val DURATION_CLICK = 100L
