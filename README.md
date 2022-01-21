@@ -24,7 +24,7 @@ Just allow overlay and select a mode.
 <br><br>
 
 ## Requirements
-<img src="https://user-images.githubusercontent.com/81938036/150382284-5a4dce99-b8c8-48da-bf70-3d50d587b5d4.png" width="256" height="540">
+<img src="https://user-images.githubusercontent.com/81938036/150549313-7aeaf919-cd71-4eb2-891a-c895f6382a8d.png" width="256" height="190">
 The width of the device must be 1080.
 <br><br>
 
