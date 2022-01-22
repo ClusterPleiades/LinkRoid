@@ -34,7 +34,7 @@ The width of the device must be 1080.
 2. Build a deck with monsters(no pendulum) with low ATK and high DEF.
 <br><br>
 
-##
+## Usage
 <img src="https://user-images.githubusercontent.com/81938036/150378417-45b44faa-b259-4e1a-8bf2-5c695737733f.png" width="256" height="545">
 
 Select the 'Gate (DEF)' mode in front of the gate in the village.
