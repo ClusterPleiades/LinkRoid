@@ -30,8 +30,9 @@ The width of the device must be 1080.
 
 ## Settings
 <img src="https://user-images.githubusercontent.com/81938036/150387728-3339d26e-6191-4163-aa06-09c5a4ce0f15.png" width="256" height="545"> <img src="https://user-images.githubusercontent.com/81938036/150387734-4500183d-f441-48ac-b734-ab2106be1dec.png" width="256" height="545">
-1. Off Character Lines.
-2. Build a deck with monsters(no pendulum) with low ATK and high DEF.
+1. Make sure the language is Korean. If not, <a href="https://github.com/ClusterPleiades/Macroid/tree/master/app/src/main/res/drawable">replace drawables.</a>
+2. Off Character Lines.
+3. Build a deck with monsters(no pendulum) with low ATK and high DEF.
 <br><br>
 
 ## Usage
