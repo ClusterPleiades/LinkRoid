@@ -1,4 +1,4 @@
-# Macroid
+# LinksRoid
 Android Application for Duel Links
 <br><br>
 
