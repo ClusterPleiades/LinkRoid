@@ -32,7 +32,8 @@ The width of the device must be 1080.
 <img src="https://user-images.githubusercontent.com/81938036/150387728-3339d26e-6191-4163-aa06-09c5a4ce0f15.png" width="256" height="545"> <img src="https://user-images.githubusercontent.com/81938036/150387734-4500183d-f441-48ac-b734-ab2106be1dec.png" width="256" height="545">
 1. Make sure the language is Korean. If not, <a href="https://github.com/ClusterPleiades/Macroid/tree/master/app/src/main/res/drawable">replace drawables.</a>
 2. Off Character Lines.
-3. Build a deck with monsters(no pendulum) with low ATK and high DEF.
+3. Build a deck with monsters(no pendulum, no immediate effect) with low ATK and high DEF.
+4. Set the legendary duelist of the gate to <a href="https://www.duellinksmeta.com/characters/T%C3%A9a%20Gardner">TÉA GARDNER</a> level 10(or other weak one).
 <br><br>
 
 ## Usage
