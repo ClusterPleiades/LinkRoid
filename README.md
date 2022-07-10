@@ -1,4 +1,4 @@
-# LinksRoid
+# LinkRoid
 Android Application for Duel Links
 <br><br>
 
